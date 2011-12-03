@@ -1,0 +1,47 @@
+-----------------------------23701554932345
+Content-Disposition: form-data; name="adminName"
+
+Seth Purcell
+-----------------------------23701554932345
+Content-Disposition: form-data; name="adminImage"; filename=""
+Content-Type: application/octet-stream
+
+
+-----------------------------23701554932345
+Content-Disposition: form-data; name="adminLogin"
+
+spurcell
+-----------------------------23701554932345
+Content-Disposition: form-data; name="adminPassword"
+
+m
+-----------------------------23701554932345
+Content-Disposition: form-data; name="adminConfirm"
+
+m
+-----------------------------23701554932345
+Content-Disposition: form-data; name="publicHost"
+
+www.skstest.com
+-----------------------------23701554932345
+Content-Disposition: form-data; name="restrictedHost"
+
+skstest.sitelier.net
+-----------------------------23701554932345
+Content-Disposition: form-data; name="shellName"
+
+Sitelier Console
+-----------------------------23701554932345
+Content-Disposition: form-data; name="shellAddress"
+
+http://localhost:9000
+-----------------------------23701554932345
+Content-Disposition: form-data; name="shellFingerprint"
+
+
+-----------------------------23701554932345
+Content-Disposition: form-data; name="submit"
+
+Create My Site
+-----------------------------23701554932345--
+

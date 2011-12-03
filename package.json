@@ -1,0 +1,31 @@
+{
+  "name": "capsela",
+  "description": "A high-level, promises-based web framework built for testability",
+  "version": "1.0",
+  "main": "./index.js",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "dependencies": {
+      "formidable": ">=1.0.5",
+      "jsdom": ">=0.2.0"
+  },
+  "devDependencies": {
+      "nodeunit": ">=0.5.1"
+  },
+  "engines": {
+    "node": ">=0.4.6"
+  },
+  "author": "Seth Purcell <seth.purcell@sitelier.com>",
+  "homepage": "www.capsela.org",
+  "repository": {
+    "url": ""
+  },
+  "scripts": {
+    "test": "nodeunit testing/tests/*"
+  },
+  "private": true
+}
