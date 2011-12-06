@@ -40,6 +40,17 @@ var Pipe = require('capsela-util').Pipe;
 var Pipe = require('capsela-util').Pipe;
 var Cookie = capsela.Cookie;
 
+var baseTemplate =
+"<!DOCTYPE html>\
+<html>\
+<head>\
+    <title>{title}</title>\
+</head>\
+<body>\
+{view}\
+</body>\
+</html>";
+
 var UnitBrowser = Browser.extend({
 },
 {
@@ -82,6 +93,17 @@ var UnitBrowser = Browser.extend({
 
                 if (!response) {
                     throw new Error("stage didn't return a response");
+                }
+
+                // if the response is a View, render it into a document
+                if (response instanceof capsela.View) {
+                    response = new capsela.TemplateResponse(
+                        baseTemplate,
+                        {
+                            view: response.getHtml(),
+                            title: response.getTitle()
+                        }
+                    );
                 }
 
                 // dress the server response up as a client response
