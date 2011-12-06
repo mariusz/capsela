@@ -36,6 +36,12 @@ var mp = new MonkeyPatcher();
 
 var View = require('capsela').View;
 
+var template =
+'<!--JSON\n\
+ { "title": "Well, hello!" }\n\
+ -->\n\
+xyz';
+
 module.exports["basics"] = testCase({
 
     tearDown: function(cb) {
@@ -45,40 +51,75 @@ module.exports["basics"] = testCase({
 
     "test init": function(test) {
 
-        test.expect(4);
+        test.expect(5);
 
-        var template = 'xyz';
         var params = {};
         var view = new View(template, params);
 
         mp.patch(jsontemplate, 'expand',
             function(t, p, options) {
-                test.equal(t, template);
+                test.equal(t, 'xyz');
                 test.equal(p, params);
                 test.deepEqual(options, {undefined_str: ''});
                 return 'result';
             });
 
         test.equal(view.getHtml(), 'result');
+        test.equal(view.getTitle(), 'Well, hello!');
         test.done();
     },
 
     "test init w/o params": function(test) {
 
-        test.expect(4);
+        test.expect(5);
 
-        var template = 'xyz';
         var view = new View(template);
 
         mp.patch(jsontemplate, 'expand',
             function(t, p, options) {
-                test.equal(t, template);
+                test.equal(t, 'xyz');
                 test.deepEqual(p, {});
                 test.deepEqual(options, {undefined_str: ''});
                 return 'result';
             });
 
         test.equal(view.getHtml(), 'result');
+        test.equal(view.getTitle(), 'Well, hello!');
+        test.done();
+    },
+
+    "test init w/o title": function(test) {
+
+        test.expect(5);
+
+        var template = 'xyz';
+        var view = new View(template);
+
+        mp.patch(jsontemplate, 'expand',
+            function(t, p, options) {
+                test.equal(t, 'xyz');
+                test.deepEqual(p, {});
+                test.deepEqual(options, {undefined_str: ''});
+                return 'result';
+            });
+
+        test.equal(view.getHtml(), 'result');
+        test.equal(view.getTitle(), null);
+        test.done();
+    },
+
+    "test init w/bad title": function(test) {
+
+        var template =
+        '<!--JSON\n\
+         title: "Well, hello!"\n\
+         -->\n\
+        xyz';
+
+        test.throws(function() {
+            var view = new View(template);
+        });
+        
         test.done();
     }
 });
