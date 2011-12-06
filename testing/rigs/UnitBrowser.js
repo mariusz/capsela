@@ -77,7 +77,7 @@ var UnitBrowser = Browser.extend({
         console.log('unit browser: ' + request.method + ' ' +
             (request.secure ? 'https://' : 'http://') + hostname + request.path);
         
-        return Q.when(this.stage.process(request),
+        return Q.when(this.stage.service(request),
             function(response) {
 
                 if (!response) {

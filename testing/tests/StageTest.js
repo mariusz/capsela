@@ -51,7 +51,7 @@ module.exports["parsing"] = testCase({
             }
         ));
 
-        test.equal(stage.process(mockRequest), 'okie-doke');
+        test.equal(stage.service(mockRequest), 'okie-doke');
         test.done();
     },
 
@@ -73,7 +73,7 @@ module.exports["parsing"] = testCase({
         var mockResponse = {};
         
         var mockStage = {
-            process: function(request) {
+            service: function(request) {
                 test.equal(request, mockRequest);
                 return mockResponse;
             }

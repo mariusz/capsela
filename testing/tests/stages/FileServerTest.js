@@ -67,7 +67,7 @@ module.exports = testCase({
 
         var request = new Request('GET', '/yomama');
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response, undefined);
                 test.done();
@@ -78,7 +78,7 @@ module.exports = testCase({
 
         var request = new Request('GET', '/resources/../../etc/passwd');
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response.statusCode, 403);
                 test.done();
@@ -89,7 +89,7 @@ module.exports = testCase({
 
         var request = new Request('GET', '/other/resources/blah.jpg');
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response, undefined);
                 test.done();
@@ -99,7 +99,7 @@ module.exports = testCase({
     "test url starting with baseUrl passes through": function(test) {
         var request = new Request('GET', '/resources_of_joy/blah.jpg');
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response, undefined);
                 test.done();
@@ -113,7 +113,7 @@ module.exports = testCase({
         var bodyBuffer = new Pipe(true);
         var contentLength;
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response.statusCode, 200);
                 contentLength = response.getHeader('content-length');
@@ -135,7 +135,7 @@ module.exports = testCase({
 
         var request = new Request('GET', '/resources/chickens.jpg');
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response.statusCode, 404);
                 test.equal(response.error.message, 'file not found');
@@ -155,7 +155,7 @@ module.exports = testCase({
             test.ok(true);
         };
         
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response, undefined);
                 test.done();
@@ -169,7 +169,7 @@ module.exports = testCase({
         var bodyBuffer = new Pipe(true);
         var contentLength;
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response.statusCode, 200);
                 contentLength = response.getHeader('content-length');
@@ -194,7 +194,7 @@ module.exports = testCase({
         var bodyBuffer = new Pipe(true);
         var contentLength;
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response.statusCode, 200);
                 contentLength = response.getHeader('content-length');
@@ -216,7 +216,7 @@ module.exports = testCase({
 
         var request = new Request('GET', '/resources');
 
-        Q.when(fileServer.process(request),
+        Q.when(fileServer.service(request),
             function(response) {
                 test.equal(response.statusCode, 404);
                 test.equal(response.error.message, 'file not found');
@@ -231,7 +231,7 @@ module.exports = testCase({
 
         fs.stat(testbench.fixturesDir + '/fileserver/monkeys.txt', function(err, stat) {
             
-            Q.when(fileServer.process(request),
+            Q.when(fileServer.service(request),
                 function(response) {
                     test.equal(response.statusCode, 200);
                     test.equal(response.getHeader('content-length'), 13);
@@ -257,7 +257,7 @@ module.exports = testCase({
 
         fs.stat(testbench.fixturesDir + '/fileserver/chickens.html', function(err, stat) {
 
-            Q.when(fileServer.process(request),
+            Q.when(fileServer.service(request),
                 function(response) {
                     test.equal(response.statusCode, 200);
                     test.equal(response.getHeader('content-length'), stat.size);
@@ -283,7 +283,7 @@ module.exports = testCase({
 
         fs.stat(testbench.fixturesDir + '/fileserver/styles/main.css', function(err, stat) {
 
-            Q.when(fileServer.process(request),
+            Q.when(fileServer.service(request),
                 function(response) {
                     test.equal(response.statusCode, 200);
                     test.equal(response.getHeader("Content-Type"), "text/css");
@@ -309,7 +309,7 @@ module.exports = testCase({
 
         fs.stat(testbench.fixturesDir + '/fileserver/scripts/hello.js', function(err, stat) {
 
-            Q.when(fileServer.process(request),
+            Q.when(fileServer.service(request),
                 function(response) {
                     test.equal(response.statusCode, 200);
                     test.equal(response.getHeader("Content-Type"), "text/javascript");
@@ -335,7 +335,7 @@ module.exports = testCase({
 
         fs.stat(testbench.fixturesDir + '/fileserver/scripts/hello.js', function(err, stat) {
 
-            Q.when(fileServer.process(request),
+            Q.when(fileServer.service(request),
                 function(response) {
                     test.equal(response.statusCode, 200);
                     test.equal(response.getHeader("Content-Type"), "text/javascript");
@@ -361,7 +361,7 @@ module.exports = testCase({
         // todo check the body data
         fs.stat(testbench.fixturesDir + '/fileserver/monkeys.txt', function(err, stat) {
 
-            Q.when(fileServer.process(request),
+            Q.when(fileServer.service(request),
                 function(response) {
                     test.equal(response.statusCode, 200);
                     test.equal(response.getHeader("Content-Type"), "image/png");
@@ -380,7 +380,7 @@ module.exports = testCase({
 
         fs.stat(testbench.fixturesDir + '/fileserver/monkeys.txt', function(err, stat) {
 
-            Q.when(fileServer.process(request), function(response) {
+            Q.when(fileServer.service(request), function(response) {
                 test.equal(response.statusCode, 200);
                 test.equal(response.getHeader("Content-Type"), null);
                 test.equal(response.getHeader('content-length'), 18);
@@ -397,7 +397,7 @@ module.exports = testCase({
 
         fs.stat(testbench.fixturesDir + '/fileserver/monkeys.txt', function(err, stat) {
 
-            Q.when(fileServer.process(request), function(response) {
+            Q.when(fileServer.service(request), function(response) {
                 test.equal(response.statusCode, 200);
                 test.equal(response.getHeader("Content-Type"), "text/plain");
                 test.equal(response.getHeader('content-length'), 0);
@@ -419,7 +419,7 @@ module.exports = testCase({
 
             var bodyBuffer = new Pipe(true);
 
-            Q.when(fileServer.process(request),
+            Q.when(fileServer.service(request),
                 function(response) {
                     test.equal(response.statusCode, 304);
                     test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
@@ -446,7 +446,7 @@ module.exports = testCase({
             });
 
             // todo check body data
-            Q.when(fileServer.process(request), function(response) {
+            Q.when(fileServer.service(request), function(response) {
                 test.equal(response.statusCode, 200);
                 test.equal(response.getHeader("Content-Type"), "image/png");
                 test.equal(response.getHeader('content-length'), 661);
@@ -462,29 +462,29 @@ module.exports = testCase({
 
         var request = new Request('GET', '/resources/more/scripts/hi.js');
 
-        Q.when(fileServer.process(request), function(response) {
+        Q.when(fileServer.service(request), function(response) {
             test.equal(response.statusCode, 404);
 
             request = new Request('GET', '/resources/more/scripts/hi.js');
             fileServer.addPath("/resources/more", testbench.fixturesDir + '/fileserver2');
 
-            Q.when(fileServer.process(request), function(response) {
+            Q.when(fileServer.service(request), function(response) {
                 test.equal(response.statusCode, 200);
 
                 request = new Request('GET', '/resources/evenmore/styles/other.css');
 
-                Q.when(fileServer.process(request), function(response) {
+                Q.when(fileServer.service(request), function(response) {
                     test.equal(response.statusCode, 404);
 
                     request = new Request('GET', '/resources/evenmore/styles/other.css');
                     fileServer.addPath("/resources/evenmore", testbench.fixturesDir + '/fileserver3');
 
-                    Q.when(fileServer.process(request), function(response) {
+                    Q.when(fileServer.service(request), function(response) {
                         test.equal(response.statusCode, 200);
 
                         request = new Request('GET', '/resources/more/scripts/hi.js');
 
-                        Q.when(fileServer.process(request), function(response) {
+                        Q.when(fileServer.service(request), function(response) {
                             test.equal(response.statusCode, 200);
 
                             test.done();

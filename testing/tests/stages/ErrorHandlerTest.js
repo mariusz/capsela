@@ -53,7 +53,7 @@ module.exports = testCase({
                 return response;
             }));
 
-        Q.when(handler.process(request),
+        Q.when(handler.service(request),
             function(res) {
                 test.equal(res, response);
                 test.done();
@@ -71,7 +71,7 @@ module.exports = testCase({
                 return new ErrorResponse(error, 404);
             }));
 
-        Q.when(handler.process(request),
+        Q.when(handler.service(request),
             function(response) {
                 test.equal(response.template, 'the-template');
                 test.deepEqual(response.params, {

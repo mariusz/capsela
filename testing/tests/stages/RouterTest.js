@@ -53,7 +53,7 @@ module.exports = testCase({
             test.equal(req, request);
         });
 
-        Q.when(router.process(request), function() {
+        Q.when(router.service(request), function() {
             test.done();
         });
     },
@@ -73,7 +73,7 @@ module.exports = testCase({
             test.equal(req, request);
         });
 
-        Q.when(router.process(request), function() {
+        Q.when(router.service(request), function() {
             test.done();
         });
     },
@@ -103,7 +103,7 @@ module.exports = testCase({
             test.ok(true);
         });
 
-        Q.when(router.process(new Request('GET', '/testing')), function() {
+        Q.when(router.service(new Request('GET', '/testing')), function() {
             test.done();
         });
     },
@@ -118,7 +118,7 @@ module.exports = testCase({
             test.ok(true);
         });
 
-        Q.when(router.process(new Request('POST', '/testing')), function() {
+        Q.when(router.service(new Request('POST', '/testing')), function() {
             test.done();
         });
     },
@@ -133,7 +133,7 @@ module.exports = testCase({
             test.ok(true);
         });
 
-        Q.when(router.process(new Request('PUT', '/testing')), function() {
+        Q.when(router.service(new Request('PUT', '/testing')), function() {
             test.done();
         });
     },
@@ -148,7 +148,7 @@ module.exports = testCase({
             test.ok(true);
         });
 
-        Q.when(router.process(new Request('DELETE', '/testing')), function() {
+        Q.when(router.service(new Request('DELETE', '/testing')), function() {
             test.done();
         });
     },
@@ -164,7 +164,7 @@ module.exports = testCase({
             test.ok(true);
         };
 
-        Q.when(router.process(request),
+        Q.when(router.service(request),
             function(response) {
                 test.equal(request.router, router);
                 test.equal(response, undefined);
@@ -182,7 +182,7 @@ module.exports = testCase({
                     return new Response();
                 });
 
-        Q.when(router.process(request),
+        Q.when(router.service(request),
             function(response) {
                 test.equal(request.router, router);
                 test.equal(response.statusCode, 405);
@@ -201,7 +201,7 @@ module.exports = testCase({
                 return mockResponse;
             });
 
-        Q.when(router.process(request), function(response) {
+        Q.when(router.service(request), function(response) {
 
             // make sure router injects self into request
             test.equal(request.router, router);
@@ -225,7 +225,7 @@ module.exports = testCase({
                     return mockResponse;
                 });
 
-        Q.when(router.process(request),
+        Q.when(router.service(request),
             function(response) {
                 test.equal(request.router, router);
                 test.equal(response, mockResponse);
@@ -248,7 +248,7 @@ module.exports = testCase({
                     test.ok(false);
                 });
 
-        Q.when(router.process(request),
+        Q.when(router.service(request),
             function(response) {
                 test.equal(request.router, router);
                 test.equal(response, undefined);
@@ -270,7 +270,7 @@ module.exports = testCase({
                     return mockResponse;
                 });
 
-        Q.when(router.process(request), function(response) {
+        Q.when(router.service(request), function(response) {
             test.equal(request.router, router);
             test.equal(response, mockResponse);
             test.done();
@@ -306,7 +306,7 @@ module.exports = testCase({
 
         test.deepEqual(request.params, {title: 'yesterday', color: 'mauve'});
 
-        Q.when(router.process(request), function(response) {
+        Q.when(router.service(request), function(response) {
             test.equal(request.router, router);
             test.equal(response, mockResponse);
             test.done();
@@ -327,7 +327,7 @@ module.exports = testCase({
 
         var request = new Request('GET', '/monkeys?i=989234');
 
-        Q.when(router.process(request), function(response) {
+        Q.when(router.service(request), function(response) {
             test.equal(response, mockResponse);
             test.done();
         });

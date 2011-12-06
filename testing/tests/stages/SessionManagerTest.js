@@ -91,7 +91,7 @@ module.exports = testCase({
         // add session to request
         var request = new Request();
 
-        Q.when(sm.process(request),
+        Q.when(sm.service(request),
             function(response) {
                 test.equal(response, undefined);
                 test.done();
@@ -222,7 +222,7 @@ module.exports = testCase({
             'cookie': 'sks-session-id=' + session.getId()
         });
 
-        Q.when(sm.process(request), function() {
+        Q.when(sm.service(request), function() {
             test.done();
         });
     },
@@ -271,7 +271,7 @@ module.exports = testCase({
             test.equal('sks-session-id=aloha; Expires=Thu, 01 Jan 1970 05:30:00 GMT', value);
         };
         
-        Q.when(sm.process(request), function() {
+        Q.when(sm.service(request), function() {
             test.done();
         });
     }

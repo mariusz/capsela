@@ -76,7 +76,7 @@ module.exports["construct/start"] = testCase({
         var server = new Server(80);
 
         server.setNext({
-            process: function(request) {
+            service: function(request) {
                 now += 88;
                 return new ErrorResponse(new Error("server error, dude"));
             }
@@ -139,7 +139,7 @@ module.exports["construct/start"] = testCase({
         var server = new Server(443, {secure: true});
 
         server.setNext({
-            process: function(request) {
+            service: function(request) {
                 test.ok(request.isSecure());
             }
         });
@@ -186,7 +186,7 @@ module.exports["construct/start"] = testCase({
         var server = new Server(443, serverOpts);
 
         server.setNext({
-            process: function(request) {
+            service: function(request) {
                 test.ok(request.isSecure());
                 // make sure the pskId was copied from the request's connection up to the request
                 test.equal(request.getPskId(), 'pre-shared-key-id');
@@ -238,7 +238,7 @@ module.exports["construct/start"] = testCase({
         var server = new Server(9001);
 
         server.setNext({
-            process: function(request) {
+            service: function(request) {
                 test.ok(!request.isSecure());
             }
         });
@@ -318,7 +318,7 @@ module.exports["form processing"] = testCase({
         var server = new Server(80);
 
         server.setNext({
-            process: function(request) {
+            service: function(request) {
                 request.getForm(function(err, form) {
                     test.ok(!err);
                     test.deepEqual(form.getFields(), expected);
@@ -370,7 +370,7 @@ module.exports["form processing"] = testCase({
         var server = new Server(80);
 
         server.setNext({
-            process: function(request) {
+            service: function(request) {
 
                 var d = Q.defer(); // need to wait
 
@@ -468,7 +468,7 @@ module.exports["request processing"] = testCase({
         var server = new Server(80);
 
         server.addStage({
-            process: function(request) {
+            service: function(request) {
                 throw new Error("fool! you've killed us all!");
             }
         });
@@ -497,7 +497,7 @@ module.exports["request processing"] = testCase({
         var server = new Server(80);
 
         server.addStage({
-            process: function(request) {
+            service: function(request) {
                 return Q.ref().then(
                     function() {
                         throw new Error("fool! you've killed us all!");
@@ -538,7 +538,7 @@ module.exports["request processing"] = testCase({
         var server = new Server(80, {name: 'TestServer'});
 
         server.addStage({
-            process: function(request) {
+            service: function(request) {
                 test.ok(request instanceof Request);
                 return new Response(410);
             }
