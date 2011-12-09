@@ -38,7 +38,7 @@ var View = require('capsela').View;
 
 var template =
 '<!--JSON\n\
- { "title": "Well, hello!" }\n\
+ { "title": "Goodbye, cruel world!", "complete": true }\n\
  -->\n\
 xyz';
 
@@ -51,8 +51,6 @@ module.exports["basics"] = testCase({
 
     "test init": function(test) {
 
-        test.expect(5);
-
         var params = {};
         var view = new View(template, params);
 
@@ -64,8 +62,11 @@ module.exports["basics"] = testCase({
                 return 'result';
             });
 
-        test.equal(view.getHtml(), 'result');
-        test.equal(view.getTitle(), 'Well, hello!');
+        test.equal(view.getContent(), 'result');
+        test.equal(view.getTemplate(), 'xyz');
+        test.deepEqual(view.getParams(), params);
+        test.equal(view.getEnv().title, 'Goodbye, cruel world!');
+        test.equal(view.getEnv().complete, true);
         test.done();
     },
 
@@ -79,8 +80,9 @@ module.exports["basics"] = testCase({
                 test.ok(false);
             });
 
-        test.equal(view.getHtml(), 'xyz');
-        test.equal(view.getTitle(), 'Well, hello!');
+        test.equal(view.getContent(), 'xyz');
+        test.equal(view.getEnv().title, 'Goodbye, cruel world!');
+        test.equal(view.getEnv().complete, true);
         test.done();
     },
 
@@ -89,8 +91,9 @@ module.exports["basics"] = testCase({
         var template = 'xyz';
         var view = new View(template);
 
-        test.equal(view.getHtml(), 'xyz');
-        test.equal(view.getTitle(), null);
+        test.equal(view.getContent(), 'xyz');
+        test.equal(view.getTemplate(), 'xyz');
+        test.deepEqual(view.getEnv(), {});
         test.done();
     },
 

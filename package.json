@@ -1,31 +1,51 @@
 {
-  "name": "capsela",
-  "description": "A high-level, promises-based web framework built for testability",
-  "version": "1.0",
-  "main": "./index.js",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
+    "name": "capsela",
+    "description": "A high-level, promises-based web framework built for testability",
+    "version": "1.0.0",
+    "main": "./index.js",
+
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://www.opensource.org/licenses/mit-license.php"
+        }
+    ],
+
+    "dependencies": {
+        "capsela-util": ">=0.1.0",
+        "qq": ">=0.3.3",
+        "q-fs": ">=0.1.19",
+        "formidable": ">=1.0.5",
+        "jsdom": ">=0.2.0",
+        "json-template": ">=0.8.0"
+    },
+
+    "devDependencies": {
+        "nodeunit": ">=0.5.1"
+    },
+
+    "engines": {
+        "node": ">=0.4.6"
+    },
+
+    "scripts": {
+        "test": "nodeunit testing/tests/*"
+    },
+
+    "author": {
+        "name": "Seth Purcell",
+        "email": "seth.purcell@sitelier.com"
+    },
+
+    "contributors": [
+        {
+            "name": "Chris Osborn",
+            "email": "chris.osborn@sitelier.com"
+        }
+    ],
+
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/Sitelier/capsela.git"
     }
-  ],
-  "dependencies": {
-      "formidable": ">=1.0.5",
-      "jsdom": ">=0.2.0"
-  },
-  "devDependencies": {
-      "nodeunit": ">=0.5.1"
-  },
-  "engines": {
-    "node": ">=0.4.6"
-  },
-  "author": "Seth Purcell <seth.purcell@sitelier.com>",
-  "homepage": "www.capsela.org",
-  "repository": {
-    "url": ""
-  },
-  "scripts": {
-    "test": "nodeunit testing/tests/*"
-  },
-  "private": true
 }

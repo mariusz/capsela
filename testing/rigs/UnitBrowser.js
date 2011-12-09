@@ -60,7 +60,8 @@ var UnitBrowser = Browser.extend({
      * @param stage the stage under test
      */
     init: function(stage) {
-        this.stage = stage;
+        this.compositor = new capsela.stages.Compositor(baseTemplate);
+        this.compositor.setNext(stage);
         this._super();
     },
 
@@ -88,23 +89,23 @@ var UnitBrowser = Browser.extend({
         console.log('unit browser: ' + request.method + ' ' +
             (request.secure ? 'https://' : 'http://') + hostname + request.path);
         
-        return Q.when(this.stage.service(request),
+        return Q.when(this.compositor.service(request),
             function(response) {
 
                 if (!response) {
                     throw new Error("stage didn't return a response");
                 }
 
-                // if the response is a View, render it into a document
-                if (response instanceof capsela.View) {
-                    response = new capsela.TemplateResponse(
-                        baseTemplate,
-                        {
-                            view: response.getHtml(),
-                            title: response.getTitle()
-                        }
-                    );
-                }
+//                // if the response is a View, render it into a document
+//                if (response instanceof capsela.View) {
+//                    response = new capsela.TemplateResponse(
+//                        baseTemplate,
+//                        {
+//                            view: response.getContent(),
+//                            title: response.getEnv().title
+//                        }
+//                    );
+//                }
 
                 // dress the server response up as a client response
                 // this gives us easy direct access to the server response

@@ -81,5 +81,31 @@ module.exports = testCase({
                 test.equal(response.statusCode, 200);
                 test.done();
             });
+    },
+
+    "test intercept complete": function(test) {
+
+        var request = new Request();
+        var handler = new Compositor('the-template');
+        var view = new View(
+            '<!--JSON {"complete": true} --> 2X2L calling CQ! 2X2L calling CQ!', {
+                title: "Title!"
+            }
+        );
+
+        handler.setNext(new Stage(
+            function() {
+                return view;
+            }));
+
+        Q.when(handler.service(request),
+            function(response) {
+                test.equal(response.template, '2X2L calling CQ! 2X2L calling CQ!');
+                test.deepEqual(response.params, {
+                    title: 'Title!'
+                });
+                test.equal(response.statusCode, 200);
+                test.done();
+            });
     }
 });
