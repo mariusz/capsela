@@ -30,7 +30,7 @@ var testbench = require(__dirname + '/../TestBench');
 var testCase = require('nodeunit').testCase;
 var Pipe = require('capsela-util').Pipe;
 
-var StreamResponse = require('capsela').StreamResponse;
+var BlobResponse = require('capsela').BlobResponse;
 
 module.exports["basics"] = testCase({
 
@@ -39,32 +39,70 @@ module.exports["basics"] = testCase({
         var source = new Pipe();
         var bodyBuffer = new Pipe();
 
-        var response = new StreamResponse(source, 'image/jpeg', 4732);
+        var blob = {
 
-        // write stuff to the source that will be missed if it's not paused
-        source.write(new Buffer('hello dolly! '));
+            getType: function() {
+                return 'image/jpeg'
+            },
+
+            getSize: function() {
+                return 4732;
+            },
+
+            getLastModified: function() {
+                return new Date(72146);
+            },
+
+            getStream: function() {
+                return source;
+            }
+        }
+
+        var response = new BlobResponse(blob);
 
         test.equal(response.getContentType(), 'image/jpeg');
         test.equal(response.getHeader('content-length'), 4732);
+        test.equal(response.getHeader('last-modified'), new Date(72146).toUTCString());
 
         bodyBuffer.getData().then(
             function(data) {
-                test.equal(data.toString(), 'hello dolly! goodbye dolly.');
+                test.equal(data.toString(), 'goodbye dolly.');
                 test.done();
             }
         );
 
-        response.writeBody(bodyBuffer);
+        response.sendBody(bodyBuffer);
+
         source.end(new Buffer('goodbye dolly.'));
     },
     
     "test zero size": function(test) {
 
         var source = new Pipe();
-        var response = new StreamResponse(source, 'text/plain', 0);
+        var blob = {
+
+            getType: function() {
+                return 'text/plain'
+            },
+
+            getSize: function() {
+                return 0;
+            },
+
+            getLastModified: function() {
+                return new Date(72146);
+            },
+
+            getStream: function() {
+                return source;
+            }
+        }
+
+        var response = new BlobResponse(blob);
 
         test.equal(response.getContentType(), 'text/plain');
         test.equal(response.getHeader('content-length'), 0);
+        test.equal(response.getHeader('last-modified'), new Date(72146).toUTCString());
         test.done();
     }
 });

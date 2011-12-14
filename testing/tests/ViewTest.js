@@ -29,12 +29,12 @@
 var testbench = require(__dirname + '/../TestBench');
 var testCase = require('nodeunit').testCase;
 var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
-var jsontemplate = require('json-template');
+var jsontemplate = require('capsela').JsonTemplate;
 var BufferUtils = require('capsela-util').BufferUtils;
 var Pipe = require('capsela-util').Pipe;
 var mp = new MonkeyPatcher();
 
-var View = require('capsela').View;
+var capsela = require('capsela');
 
 var template =
 '<!--JSON\n\
@@ -52,17 +52,18 @@ module.exports["basics"] = testCase({
     "test init": function(test) {
 
         var params = {};
-        var view = new View(template, params);
+        var view = new capsela.View(template, params, 'xx');
 
         mp.patch(jsontemplate, 'expand',
             function(t, p, options) {
                 test.equal(t, 'xyz');
-                test.equal(p, params);
+                test.deepEqual(p, params);
                 test.deepEqual(options, {undefined_str: ''});
                 return 'result';
             });
 
-        test.equal(view.getContent(), 'result');
+        test.equal(view.render(), 'result');
+        test.equal(view.urlFactory, 'xx');
         test.equal(view.getTemplate(), 'xyz');
         test.deepEqual(view.getParams(), params);
         test.equal(view.getEnv().title, 'Goodbye, cruel world!');
@@ -72,7 +73,7 @@ module.exports["basics"] = testCase({
 
     "test init w/o params": function(test) {
 
-        var view = new View(template);
+        var view = new capsela.View(template);
 
         // shouldn't render
         mp.patch(jsontemplate, 'expand',
@@ -80,7 +81,7 @@ module.exports["basics"] = testCase({
                 test.ok(false);
             });
 
-        test.equal(view.getContent(), 'xyz');
+        test.equal(view.render(), 'xyz');
         test.equal(view.getEnv().title, 'Goodbye, cruel world!');
         test.equal(view.getEnv().complete, true);
         test.done();
@@ -89,9 +90,9 @@ module.exports["basics"] = testCase({
     "test init w/o title": function(test) {
 
         var template = 'xyz';
-        var view = new View(template);
+        var view = new capsela.View(template);
 
-        test.equal(view.getContent(), 'xyz');
+        test.equal(view.render(), 'xyz');
         test.equal(view.getTemplate(), 'xyz');
         test.deepEqual(view.getEnv(), {});
         test.done();
@@ -106,9 +107,29 @@ module.exports["basics"] = testCase({
         xyz';
 
         test.throws(function() {
-            var view = new View(template);
+            var view = new capsela.View(template);
         });
         
+        test.done();
+    },
+
+    "test getcontent with links": function(test) {
+
+        var template = 'link1: {link1}, link2: {link2}';
+        var params = {
+            link1: new capsela.Link('signup', 'default', {}),
+            link2: new capsela.Link('message', 'view', {key: 72, who: 'you'}, true)
+        };
+
+        var dispatcher = new capsela.stages.Dispatcher('root');
+
+        dispatcher.addController({}, 'signup');
+        dispatcher.addController({}, 'message');
+
+        var view = new capsela.View(template, params, dispatcher);
+
+        test.equal(view.render(),
+            'link1: root/signup/, link2: root/message/view/key/72/who/you');
         test.done();
     }
 });

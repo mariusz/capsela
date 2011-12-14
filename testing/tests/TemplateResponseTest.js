@@ -29,7 +29,7 @@
 var testbench = require(__dirname + '/../TestBench');
 var testCase = require('nodeunit').testCase;
 var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
-var jsontemplate = require('json-template');
+var jsontemplate = require('capsela').JsonTemplate;
 var BufferUtils = require('capsela-util').BufferUtils;
 var Pipe = require('capsela-util').Pipe;
 var mp = new MonkeyPatcher();
@@ -70,7 +70,7 @@ module.exports["basics"] = testCase({
             }
         );
 
-        response.writeBody(pipe);
+        response.sendBody(pipe);
     },
 
     "test init with no params": function(test) {
@@ -98,6 +98,6 @@ module.exports["basics"] = testCase({
             }
         );
 
-        response.writeBody(pipe);
+        response.sendBody(pipe);
     }
 });

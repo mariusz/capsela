@@ -20,20 +20,36 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Author: Chris Osborn
- * Date: 5/4/11
+ * Author: Seth Purcell
+ * Date: 4/6/11
  */
 
 "use strict";
 
-var modules = ['FileServer', 'Router', 'SessionManager', 'ErrorHandler', 'Compositor', 'Dispatcher'];
+var testbench = require(__dirname + '/../TestBench');
+var testCase = require('nodeunit').testCase;
 
-function loadModule(name) {
-    var module = require(__dirname + '/' + name);
-    exports[name] = module;
-    for (var item in module) {
-        exports[item] = module[item];
+var Link = require('capsela').Link;
+
+module.exports["basics"] = testCase({
+
+    "test init/render": function(test) {
+
+        var params = {};
+        var link = new Link('signup', 'default', params, true);
+
+        var urlFactory = {
+            getUrl: function(c, a, p, isLeaf) {
+                test.equal(c, 'signup');
+                test.equal(a, 'default');
+                test.equal(p, params);
+                test.equal(isLeaf, true);
+                return 'result!';
+            }
+        };
+        
+        test.equal(link.render(urlFactory), 'result!');
+
+        test.done();
     }
-}
-
-modules.forEach(loadModule);
+});

@@ -30,3 +30,4 @@ The externally maintained libraries used by Capsela are:
 
   - jQuery, copyright 2010 by John Resig and dual-licensed under
   the MIT or GPL Version 2 licenses.
+  - JSON Template, copyright 2009 Andy Chu, Apache 2.0 licensed.

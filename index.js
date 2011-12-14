@@ -29,8 +29,8 @@
 
 var modules = ['Server', 'Stage', 'Request', 'Response',
     'Redirect', 'ErrorResponse', 'FileResponse',
-    'JsonResponse', 'StreamResponse', 'TemplateResponse',
-    'ClientResponse', 'Controller',
+    'JsonResponse', 'BlobResponse', 'TemplateResponse',
+    'ClientResponse', 'Controller', 'Link',
      'Route', 'HttpClient', 'Browser', 'Cookie', 'Form',
     'Session', 'SessionStore', 'View'];
 
@@ -43,6 +43,8 @@ function loadModule(name) {
 }
 
 modules.forEach(loadModule);
+
+exports.JsonTemplate = require(__dirname + '/deps/json-template.js');
 
 exports.stages = require(__dirname + '/lib/stages');
 

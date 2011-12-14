@@ -73,7 +73,7 @@ module.exports["basics"] = testCase({
         test.done();
     },
 
-    "test writebody no wrap": function(test) {
+    "test sendBody no wrap": function(test) {
 
         var entity = {'expires': 'tomorrow'};
         var r = new JsonResponse(entity);
@@ -86,10 +86,10 @@ module.exports["basics"] = testCase({
             }
         );
 
-        r.writeBody(pipe);
+        r.sendBody(pipe);
     },
 
-    "test writebody HTML wrap": function(test) {
+    "test sendBody HTML wrap": function(test) {
 
         var entity = {'expires': 'tomorrow'};
         var r = new JsonResponse(entity);
@@ -106,6 +106,6 @@ module.exports["basics"] = testCase({
             }
         );
 
-        r.writeBody(pipe);
+        r.sendBody(pipe);
     }
 });

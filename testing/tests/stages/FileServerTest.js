@@ -119,7 +119,7 @@ module.exports = testCase({
                 contentLength = response.getHeader('content-length');
                 test.equal(response.getHeader("Content-Type"), "text/html");
                 test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
-                response.writeBody(bodyBuffer);
+                response.sendBody(bodyBuffer);
                 return bodyBuffer.getData();
             }
         ).then(
@@ -175,7 +175,7 @@ module.exports = testCase({
                 contentLength = response.getHeader('content-length');
                 test.equal(response.getHeader("Content-Type"), "text/html");
                 test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
-                response.writeBody(bodyBuffer);
+                response.sendBody(bodyBuffer);
                 return bodyBuffer.getData();
             }
         ).then(
@@ -200,7 +200,7 @@ module.exports = testCase({
                 contentLength = response.getHeader('content-length');
                 test.equal(response.getHeader("Content-Type"), "text/html");
                 test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
-                response.writeBody(bodyBuffer);
+                response.sendBody(bodyBuffer);
                 return bodyBuffer.getData();
             }
         ).then(
@@ -238,7 +238,7 @@ module.exports = testCase({
                     test.equal(response.getHeader("Content-Type"), "text/plain");
                     test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
                     test.equal(response.getHeader('Last-Modified'), stat.mtime.toUTCString());
-                    response.writeBody(bodyBuffer);
+                    response.sendBody(bodyBuffer);
                     return bodyBuffer.getData();
                 }
             ).then(
@@ -264,7 +264,7 @@ module.exports = testCase({
                     test.equal(response.getHeader("Content-Type"), "text/html");
                     test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
                     test.equal(response.getHeader('Last-Modified'), stat.mtime.toUTCString());
-                    response.writeBody(bodyBuffer);
+                    response.sendBody(bodyBuffer);
                     return bodyBuffer.getData();
                 }
             ).then(
@@ -290,7 +290,7 @@ module.exports = testCase({
                     test.equal(response.getHeader('content-length'), stat.size);
                     test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
                     test.equal(response.getHeader('Last-Modified'), stat.mtime.toUTCString());
-                    response.writeBody(bodyBuffer);
+                    response.sendBody(bodyBuffer);
                     return bodyBuffer.getData();
                 }
             ).then(
@@ -316,7 +316,7 @@ module.exports = testCase({
                     test.equal(response.getHeader('content-length'), stat.size);
                     test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
                     test.equal(response.getHeader('Last-Modified'), stat.mtime.toUTCString());
-                    response.writeBody(bodyBuffer);
+                    response.sendBody(bodyBuffer);
                     return bodyBuffer.getData();
                 }
             ).then(
@@ -342,7 +342,7 @@ module.exports = testCase({
                     test.equal(response.getHeader('content-length'), stat.size);
                     test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
                     test.equal(response.getHeader('Last-Modified'), stat.mtime.toUTCString());
-                    response.writeBody(bodyBuffer);
+                    response.sendBody(bodyBuffer);
                     return bodyBuffer.getData();
                 }
             ).then(
@@ -405,55 +405,6 @@ module.exports = testCase({
                 test.equal(response.getHeader('Last-Modified'), stat.mtime.toUTCString());
                 test.done();
             }).end();
-
-        });
-    },
-
-    "test serve unmodified": function(test) {
-
-        fs.stat(testbench.fixturesDir + '/fileserver/monkeys.txt', function(err, stat) {
-
-            var request = new Request('GET', '/resources/favicon.png', {
-                'If-Modified-Since': stat.mtime.toUTCString()
-            });
-
-            var bodyBuffer = new Pipe(true);
-
-            Q.when(fileServer.service(request),
-                function(response) {
-                    test.equal(response.statusCode, 304);
-                    test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
-                    test.equal(response.getHeader('Last-Modified'), stat.mtime.toUTCString());
-                    response.writeBody(bodyBuffer);
-                    return bodyBuffer.getData();
-                }
-            ).then(
-                function(data) {
-                    test.equal(data, null);
-                    test.done();
-                }
-            ).end();
-
-        });
-    },
-
-    "test serve modified": function(test) {
-
-        fs.stat(testbench.fixturesDir + '/fileserver/monkeys.txt', function(err, stat) {
-
-            var request = new Request('GET', '/resources/favicon.png', {
-                'If-Modified-Since': new Date(stat.mtime.getTime() - 7 * 86400 * 1000).toUTCString() // a week old
-            });
-
-            // todo check body data
-            Q.when(fileServer.service(request), function(response) {
-                test.equal(response.statusCode, 200);
-                test.equal(response.getHeader("Content-Type"), "image/png");
-                test.equal(response.getHeader('content-length'), 661);
-                test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
-                test.equal(response.getHeader('Last-Modified'), stat.mtime.toUTCString());
-                test.done();
-            });
 
         });
     },

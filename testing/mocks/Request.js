@@ -49,27 +49,28 @@ var Request = Pipe.extend({
             throw new Error("invalid HTTP method: " + method);
         }
 
-        var req = new Request(method, url);
+        var req = new Request(method, url, headers);
 
         req.body = body;
-
-        // lowercase the headers, as node does
-        for (var i in headers) {
-            req.headers[i.toLowerCase()] = headers[i];
-        }
 
         return req;
     }
 },
 {
-    init: function(method, url) {
+    init: function(method, url, headers) {
         this.method = method || 'GET';
         this.url = url || '/';
         this.httpVersion = '1.1';
         this.headers = {};
         this.open = true;
         this.body = '';
-        this._super(method, url);
+
+        // lowercase the headers, as node does
+        for (var i in headers) {
+            this.headers[i.toLowerCase()] = headers[i];
+        }
+
+        this._super();
     },
     
     write: function(chunk, encoding) {

@@ -121,7 +121,7 @@ var UnitBrowser = Browser.extend({
                 bodyStream.pause();
 
                 // write the response body
-                response.writeBody(bodyStream);
+                response.sendBody(bodyStream);
 
                 return response;
             }

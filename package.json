@@ -16,8 +16,7 @@
         "qq": ">=0.3.3",
         "q-fs": ">=0.1.19",
         "formidable": ">=1.0.5",
-        "jsdom": ">=0.2.0",
-        "json-template": ">=0.8.0"
+        "jsdom": ">=0.2.0"
     },
 
     "devDependencies": {

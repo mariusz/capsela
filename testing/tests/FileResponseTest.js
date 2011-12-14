@@ -31,7 +31,9 @@ var testCase = require('nodeunit').testCase;
 var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
 var Pipe = require('capsela-util').Pipe;
 var fs = require('fs');
+var qfs = require('q-fs');
 var mp = new MonkeyPatcher();
+var Q = require('qq');
 
 var FileResponse = require('capsela').FileResponse;
 
@@ -42,47 +44,96 @@ module.exports["basics"] = testCase({
         cb();
     },
 
-    "test init": function(test) {
+    "test create non-file": function(test) {
 
-        var pipe = new Pipe();
+        var stats = {
+            size: 527,
+            mtime: new Date(72000),
+            isFile: function() {
+                return false;
+            }
+        };
+
+        mp.patch(qfs, 'stat', function(path) {
+            test.equal(path, '/images/sunrise.jpg');
+            return Q.ref(stats);
+        });
+
+        FileResponse.create('/images/sunrise.jpg').then(null,
+            function(err) {
+
+                test.equal(err.message, "file not found or something, man");
+                test.done();
+            }).end();
+    },
+
+    "test create success": function(test) {
         
         var stats = {
-            size: 527
+            size: 527,
+            mtime: new Date(72000),
+            isFile: function() {
+                return true;
+            }
         };
+
+        mp.patch(qfs, 'stat', function(path) {
+            test.equal(path, '/images/sunrise.jpg');
+            return Q.ref(stats);
+        });
+
+        FileResponse.create('/images/sunrise.jpg').then(
+            function(response) {
+
+                test.equal(response.getContentType(), 'image/jpeg');
+                test.equal(response.getHeader('content-length'), 527);
+                test.equal(response.getLastModified().getTime(), 72000);
+
+                test.done();
+            }).end();
+    },
+
+    "test write body": function(test) {
+
+        var pipe = new Pipe();
+        var bodyBuffer = new Pipe(true);
+
+        var stats = {
+            size: 527,
+            mtime: new Date(72000),
+            isFile: function() {
+                return true;
+            }
+        };
+
+        mp.patch(qfs, 'stat', function(path) {
+            test.equal(path, '/images/sunrise.jpg');
+            return Q.ref(stats);
+        });
 
         mp.patch(fs, 'createReadStream', function(path) {
             test.equal(path, '/images/sunrise.jpg');
             return pipe;
         });
 
-        var response = new FileResponse('/images/sunrise.jpg', stats);
-        
-        test.equal(response.getContentType(), 'image/jpeg');
-        test.equal(response.getHeader('content-length'), 527);
-        test.equal(response.stream, pipe);
-        
-        test.done();
-    },
+        FileResponse.create('/images/sunrise.jpg').then(
+            function(r) {
 
-    "test init zero size": function(test) {
+                test.equal(r.getContentType(), 'image/jpeg');
+                test.equal(r.getHeader('content-length'), 527);
+                test.equal(r.getLastModified().getTime(), 72000);
 
-        var pipe = new Pipe();
+                r.sendBody(bodyBuffer);
 
-        var stats = {
-            size: 0
-        };
+                pipe.end('oh my goodness!');
 
-        mp.patch(fs, 'createReadStream', function(path) {
-            test.equal(path, '/images/sunset.gif');
-            return pipe;
-        });
+                return bodyBuffer.getData();
+            }
+        ).then(
+            function(data) {
 
-        var response = new FileResponse('/images/sunset.gif', stats);
-
-        test.equal(response.getContentType(), 'image/gif');
-        test.equal(response.getHeader('content-length'), 0);
-        test.equal(response.stream, pipe);
-
-        test.done();
+                test.equal(data.toString(), 'oh my goodness!');
+                test.done();
+            }).end();
     }
 });

@@ -54,7 +54,7 @@ module.exports["headers"] = testCase({
             }
         );
 
-        r.writeBody(pipe);
+        r.sendBody(pipe);
     },
 
     "test init with string body": function(test) {
@@ -74,7 +74,7 @@ module.exports["headers"] = testCase({
             }
         );
 
-        r.writeBody(pipe);
+        r.sendBody(pipe);
     },
 
     "test init with body and type": function(test) {
@@ -94,7 +94,7 @@ module.exports["headers"] = testCase({
             }
         );
 
-        r.writeBody(pipe);
+        r.sendBody(pipe);
     },
 
     "test init with body, type and encoding": function(test) {
@@ -114,7 +114,7 @@ module.exports["headers"] = testCase({
             }
         );
 
-        r.writeBody(pipe);
+        r.sendBody(pipe);
     },
 
     "test init with headers": function(test) {
@@ -220,6 +220,46 @@ module.exports["headers"] = testCase({
             'Content-Length': 0,
             'Location': 'http://www.sitelier.com'
         });
+
+        test.done();
+    }
+});
+
+module.exports["caching"] = testCase({
+
+    "test enableCaching w/o expires": function(test) {
+
+        var r = new Response();
+
+        test.equal(r.getHeader('last-modified'), null);
+        test.equal(r.getHeader('expires'), null);
+
+        var mtime = new Date(75000);
+        var expires = new Date(Date.now() + 365 * 86400 * 1000);
+
+        r.enableCaching(mtime);
+
+        test.equal(r.getLastModified(), mtime);
+        test.equal(r.getHeader('last-modified'), mtime.toUTCString());
+        test.equal(r.getHeader('expires'), expires.toUTCString());
+        
+        test.done();
+    },
+
+    "test enableCaching w/expires": function(test) {
+
+        var r = new Response();
+
+        test.equal(r.getHeader('last-modified'), null);
+        test.equal(r.getHeader('expires'), null);
+
+        var mtime = new Date(75000);
+        var expires = new Date(Date.now() + 365 * 86400 * 1000);
+
+        r.enableCaching(mtime, expires);
+
+        test.equal(r.getHeader('last-modified'), mtime.toUTCString());
+        test.equal(r.getHeader('expires'), expires.toUTCString());
 
         test.done();
     }
