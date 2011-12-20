@@ -28,7 +28,7 @@
 
 var testbench = require('../TestBench');
 var testCase = require('nodeunit').testCase;
-var BufferUtils = require('capsela-util').BufferUtils;
+var StreamUtil = require('capsela-util').StreamUtil;
 
 var fs = require('fs');
 

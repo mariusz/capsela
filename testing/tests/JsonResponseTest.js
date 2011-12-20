@@ -31,7 +31,7 @@ var testCase = require('nodeunit').testCase;
 
 var JsonResponse = require('capsela').JsonResponse;
 var Pipe = require('capsela-util').Pipe;
-var BufferUtils = require('capsela-util').BufferUtils;
+var StreamUtil = require('capsela-util').StreamUtil;
 
 module.exports["basics"] = testCase({
 
@@ -79,7 +79,7 @@ module.exports["basics"] = testCase({
         var r = new JsonResponse(entity);
         var pipe = new Pipe();
 
-        BufferUtils.bufferStream(pipe).then(
+        StreamUtil.buffer(pipe).then(
             function(data) {
                 test.equal(data, JSON.stringify(entity));
                 test.done();
@@ -99,7 +99,7 @@ module.exports["basics"] = testCase({
 
         test.equal(r.getContentType(), 'text/html; charset=utf-8');
 
-        BufferUtils.bufferStream(pipe).then(
+        StreamUtil.buffer(pipe).then(
             function(data) {
                 test.equal(data, '<textarea>' + JSON.stringify(entity) + '</textarea>');
                 test.done();

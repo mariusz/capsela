@@ -35,7 +35,7 @@ var HttpClient = capsela.HttpClient;
 var Request = capsela.Request;
 var ClientResponse = capsela.ClientResponse;
 var Q = require('qq');
-var BufferUtils = require('capsela-util').BufferUtils;
+var StreamUtil = require('capsela-util').StreamUtil;
 var Pipe = require('capsela-util').Pipe;
 var Pipe = require('capsela-util').Pipe;
 var Cookie = capsela.Cookie;
@@ -95,17 +95,6 @@ var UnitBrowser = Browser.extend({
                 if (!response) {
                     throw new Error("stage didn't return a response");
                 }
-
-//                // if the response is a View, render it into a document
-//                if (response instanceof capsela.View) {
-//                    response = new capsela.TemplateResponse(
-//                        baseTemplate,
-//                        {
-//                            view: response.getContent(),
-//                            title: response.getEnv().title
-//                        }
-//                    );
-//                }
 
                 // dress the server response up as a client response
                 // this gives us easy direct access to the server response

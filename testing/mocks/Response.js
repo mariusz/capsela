@@ -33,146 +33,110 @@
  */
 
 var util = require('util');
-var Class = require('capsela-util').Class;
-var BufferUtils = require('capsela-util').BufferUtils;
+var Pipe = require('capsela-util').Pipe;
+var StreamUtil = require('capsela-util').StreamUtil;
 
 var EventEmitter = require('events').EventEmitter;
 var Stream = require('stream').Stream;
 
-// create a mock of node's response object
+var MockResponse = Pipe.extend({
+},
+{
+    ///////////////////////////////////////////////////////////////////////////////
+    /**
+     * 
+     */
+    init: function() {
 
-var MockResponse = function() {
-    Stream.call(this);
+        this._super();
+        this.statusCode = 200;
+        this.headers = {};
 
-    // flag defined in WritableStream interface
-    this.writable = true;
+        this.headWritten = false;
 
-    this.ended = false;
-//    this.written = '';
-    this.statusCode = 200;
-    this.headers = {};
-    this.paused = false;
-    this.fifo = [];
+        var t = this;
 
-    this.headWritten = false;
+        StreamUtil.buffer(this).then(
+            function(buffer) {
+                t.written = buffer;
+            }
+        );
+    },
 
-    var t = this;
-
-    BufferUtils.bufferStream(this).then(
-        function(buffer) {
-            t.written = buffer;
+    ///////////////////////////////////////////////////////////////////////////////
+    /**
+     * 
+     * @param data
+     * @param encoding
+     */
+    write: function(data, encoding) {
+    
+        if (!this.headWritten) {
+            this.writeHead(this.statusCode, this.headers);
         }
-    );
-};
 
-util.inherits(MockResponse, Stream);
+        this._super(data, encoding);
+    },
 
-MockResponse.prototype._emit = MockResponse.prototype.emit;
+    ///////////////////////////////////////////////////////////////////////////////
+    /**
+     * 
+     * @param data
+     * @param encoding
+     */
+    end: function(data, encoding) {
 
-MockResponse.prototype.emit = function(event, arg) {
+        if (!this.headWritten) {
+            this.writeHead(this.statusCode, this.headers);
+        }
 
-    if (this.paused) {
-        this.fifo.push({name: event, arg: arg});
+        this._super(data, encoding);
+    },
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /**
+     * 
+     * @param statusCode
+     * @param headers
+     */
+    writeHead: function(statusCode, headers) {
+
+        this.statusCode = statusCode;
+        this.headers = headers;
+        this.headWritten = true;
+        this.emit('head');
+    },
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /**
+     * Sets the given header to the given value.
+     *
+     * @param name
+     * @param value
+     */
+    setHeader: function(name, value) {
+
+        if (!name) {
+            throw new Error("can't set header without name");
+        }
+
+        if (!value) {
+            throw new Error("can't set header without value");
+        }
+
+        this.headers[name.toLowerCase()] = value;
+    },
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /**
+     * Returns the value of the specified header.
+     *
+     * @param name
+     */
+    getHeader: function(name) {
+        var header = this.headers[name.toLowerCase()];
+        return header ? header.value : null;
     }
-    else {
-        this._emit(event, arg);
-    }
-};
-
-MockResponse.prototype.write = function(data, encoding) {
-    
-    if (!this.headWritten) {
-        this.writeHead(this.statusCode, this.headers);
-    }
-    
-//    this.written += data;
-    this.encoding = encoding;
-    
-    this.emit('data', data);
-};
-
-MockResponse.prototype.end = function(data, encoding) {
-
-    // writable flag becomes false after end()
-    this.writable = false;
-
-    if (!this.headWritten) {
-        this.writeHead(this.statusCode, this.headers);
-    }
-    
-    this.ended = true;
-//    this.written += data;
-    if (data) {
-        this.write(data, encoding);
-    }
-    this.encoding = encoding;
-    this.emit('end');
-};
-
-MockResponse.prototype.pause = function() {
-    this.paused = true;
-};
-
-MockResponse.prototype.resume = function() {
-
-    // play back the queued events
-    while(this.fifo.length > 0) {
-        var event = this.fifo.shift();
-        this._emit(event.name, event.arg);
-    }
-
-    this.paused = false;
-};
-
-MockResponse.prototype.destroy = function() {
-    
-    // writable flag becomes false after end()
-    this.writable = false;
-};
-
-MockResponse.prototype.writeHead = function(statusCode, headers) {
-
-    this.statusCode = statusCode;
-    this.headers = headers;
-    this.headWritten = true;
-    this.emit('head');
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- * Sets the given header to the given value.
- *
- * @param name
- * @param value
- */
-MockResponse.prototype.setHeader = function(name, value) {
-
-    if (!name) {
-        throw new Error("can't set header without name");
-    }
-
-    if (!value) {
-        throw new Error("can't set header without value");
-    }
-
-    this.headers[name.toLowerCase()] = value;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- * Returns the value of the specified header.
- *
- * @param name
- */
-MockResponse.prototype.getHeader = function(name) {
-    var header = this.headers[name.toLowerCase()];
-    return header ? header.value : null;
-};
-
-
-MockResponse.prototype.setEncoding = function(encoding) {
-    this.encoding = encoding;
-};
-
+});
 
 exports.Response = MockResponse;

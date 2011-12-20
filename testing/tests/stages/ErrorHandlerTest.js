@@ -73,8 +73,8 @@ module.exports = testCase({
 
         Q.when(handler.service(request),
             function(response) {
-                test.equal(response.template, 'the-template');
-                test.deepEqual(response.params, {
+                test.equal(response.view.getTemplate(), 'the-template');
+                test.deepEqual(response.view.getParams(), {
                     error: error,
                     code: 404
                 });

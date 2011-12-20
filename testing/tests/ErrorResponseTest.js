@@ -41,7 +41,11 @@ module.exports["basics"] = testCase({
 
         test.equal(er.statusCode, 500);
         test.equal(er.error, error);
-        test.equal(er.template, ErrorResponse.TEMPLATE);
+        test.equal(er.view.getTemplate(), ErrorResponse.TEMPLATE);
+        test.deepEqual(er.view.getParams(), {
+            error: error,
+            code: 500
+        });
 
         er = new ErrorResponse(error, 404);
 

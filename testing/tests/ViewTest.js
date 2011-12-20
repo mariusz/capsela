@@ -29,8 +29,8 @@
 var testbench = require(__dirname + '/../TestBench');
 var testCase = require('nodeunit').testCase;
 var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
-var jsontemplate = require('capsela').JsonTemplate;
-var BufferUtils = require('capsela-util').BufferUtils;
+var jsontemplate = require('../../deps/json-template');
+var StreamUtil = require('capsela-util').StreamUtil;
 var Pipe = require('capsela-util').Pipe;
 var mp = new MonkeyPatcher();
 

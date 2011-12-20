@@ -21,46 +21,49 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * Author: Seth Purcell
- * Date: 11/14/11
+ * Date: 11/8/11
  */
 
 "use strict";
 
-var Response = require('./Response').Response;
-var jsontemplate = require('../deps/json-template');
+var testbench = require(__dirname + '/../TestBench');
+var testCase = require('nodeunit').testCase;
+var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
+var StreamUtil = require('capsela-util').StreamUtil;
+var Pipe = require('capsela-util').Pipe;
+var mp = new MonkeyPatcher();
 
-var TemplateResponse = Response.extend({
-},
-{
-    ///////////////////////////////////////////////////////////////////////////////
-    /**
-     * Creates a new template response from the given JSON template and params.
-     * 
-     * @param template  string  a JSON template
-     * @param params    object
-     * @param code      optional HTTP status code
-     */
-    init: function(template, params, code) {
+var View = require('capsela').View;
+var ViewResponse = require('capsela').ViewResponse;
 
-        this._super(code);
-        this.template = template;
-        this.params = params || {};
-        
-        this.setContentType('text/html', 'utf8');
+module.exports["basics"] = testCase({
+
+    tearDown: function(cb) {
+        mp.tearDown();
+        cb();
     },
 
-    ///////////////////////////////////////////////////////////////////////////////
-    /**
-     * Writes the response body to the given stream.
-     *
-     * @param stream    writable stream
-     */
-    sendBody: function(stream) {
+    "test init": function(test) {
+        
+        var view = new View('xyz');
+        var response = new ViewResponse(view, 701);
+        var pipe = new Pipe();
 
-        stream.end(
-            jsontemplate.expand(this.template, this.params, {undefined_str: ''}),
-            'utf8');
+        test.equal(response.view, view);
+        test.equal(response.getContentType(), 'text/html; charset=utf-8');
+        test.equal(response.statusCode, 701);
+
+        view.render = function() {
+            return 'result';
+        };
+
+        pipe.getData().then(
+            function(data) {
+                test.equal(data, 'result');
+                test.done();
+            }
+        );
+
+        response.sendBody(pipe);
     }
 });
-
-exports.TemplateResponse = TemplateResponse;

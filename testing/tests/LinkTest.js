@@ -36,7 +36,7 @@ module.exports["basics"] = testCase({
     "test init/render": function(test) {
 
         var params = {};
-        var link = new Link('signup', 'default', params, true);
+        var link = new Link('signup', 'default', params, true, 'snark');
 
         var urlFactory = {
             getUrl: function(c, a, p, isLeaf) {
@@ -44,11 +44,11 @@ module.exports["basics"] = testCase({
                 test.equal(a, 'default');
                 test.equal(p, params);
                 test.equal(isLeaf, true);
-                return 'result!';
+                return 'result';
             }
         };
         
-        test.equal(link.render(urlFactory), 'result!');
+        test.equal(link.render(urlFactory), 'result#snark');
 
         test.done();
     }

@@ -43,6 +43,30 @@ module.exports["basics"] = testCase({
         test.done();
     },
 
+    "test init/getConfig": function(test) {
+
+        var config = {};
+        var d = new Dispatcher('butterball', config);
+
+        test.equal(d.getConfig(), config);
+
+        test.done();
+    },
+
+    "test add controller": function(test) {
+
+        var d = new Dispatcher();
+
+        var c = {};
+        d.addController(c, 'mikey', '/home/tool');
+
+        test.equal(c.name, 'mikey');
+        test.equal(c.dispatcher, d);
+        test.equal(c.homeDir, '/home/tool');
+
+        test.done();
+    },
+
     "test setUp": function(test) {
 
 //        test.expect(4);
@@ -295,7 +319,7 @@ module.exports["view handling"] = testCase({
 
         d.addController({
             defaultAction: function(request) {
-                return view;
+                return Q.ref(view);
             }
         }, 'default');
 

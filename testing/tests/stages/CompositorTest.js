@@ -37,6 +37,7 @@ var Request = capsela.Request;
 var Stage = capsela.Stage;
 var Compositor = capsela.stages.Compositor;
 var View = capsela.View;
+var ViewResponse = capsela.ViewResponse;
 var Q = require('qq');
 
 module.exports = testCase({
@@ -73,14 +74,15 @@ module.exports = testCase({
 
         Q.when(handler.service(request),
             function(response) {
-                test.equal(response.template, 'the-template');
-                test.deepEqual(response.params, {
-                    view: '2X2L calling CQ! 2X2L calling CQ!',
+                test.equal(response.statusCode, 200);
+                test.ok(response instanceof ViewResponse);
+                test.equal(response.view.template, 'the-template');
+                test.deepEqual(response.view.params, {
+                    view: view.render(),
                     title: 'Title!'
                 });
-                test.equal(response.statusCode, 200);
                 test.done();
-            });
+            }).end();
     },
 
     "test intercept complete": function(test) {
@@ -100,11 +102,8 @@ module.exports = testCase({
 
         Q.when(handler.service(request),
             function(response) {
-                test.equal(response.template, '2X2L calling CQ! 2X2L calling CQ!');
-                test.deepEqual(response.params, {
-                    title: 'Title!'
-                });
                 test.equal(response.statusCode, 200);
+                test.equal(response.view, view);
                 test.done();
             });
     }

@@ -36,7 +36,7 @@ var Response = capsela.Response;
 var Request = capsela.Request;
 var FileServer = capsela.stages.FileServer;
 var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
-var BufferUtils = require('capsela-util').BufferUtils;
+var StreamUtil = require('capsela-util').StreamUtil;
 var Pipe = require('capsela-util').Pipe;
 
 var fileServer;

@@ -31,7 +31,7 @@ var testCase = require('nodeunit').testCase;
 
 var Form = require('capsela').Form;
 var Pipe = require('capsela-util').Pipe;
-var BufferUtils = require('capsela-util').BufferUtils;
+var StreamUtil = require('capsela-util').StreamUtil;
 
 module.exports["basics"] = testCase({
 
@@ -108,7 +108,7 @@ module.exports["basics"] = testCase({
             password: 'bully!'
         });
 
-        BufferUtils.bufferStream(pipe).then(
+        StreamUtil.buffer(pipe).then(
             function(data) {
                 test.equal(data.toString(),
 '--this is a boundary' + newline + '\
