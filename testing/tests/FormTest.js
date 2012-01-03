@@ -29,9 +29,87 @@
 var testbench = require(__dirname + '/../TestBench');
 var testCase = require('nodeunit').testCase;
 
-var Form = require('capsela').Form;
+var capsela = require('capsela');
+var Form = capsela.Form;
 var Pipe = require('capsela-util').Pipe;
 var StreamUtil = require('capsela-util').StreamUtil;
+var Request = capsela.Request;
+var querystring = require('querystring');
+var fs = require('fs');
+
+module.exports["parsing"] = testCase({
+
+    "test get form urlencoded body": function(test) {
+
+        var params = {login: 'testing27@example.com', password: "chinchilla"};
+
+        var pipe = new Pipe();
+
+        var request = new Request('POST', '/yomama', {
+            'content-type': 'application/x-www-form-urlencoded'
+        }, pipe);
+
+        // stream the request body
+        process.nextTick(function() {
+            pipe.write(querystring.stringify(params), 'utf8');
+            pipe.end();
+        });
+
+        Form.createFromRequest(request).then(function(form) {
+
+            test.deepEqual(params, form.getFields());
+            test.done();
+        });
+    },
+
+    "test parse form without content type": function(test) {
+
+        var params = {login: 'testing27@example.com', password: "chinchilla"};
+
+        var pipe = new Pipe();
+
+        var request = new Request('POST', '/yomama', {}, pipe);
+
+        // stream the request body
+        process.nextTick(function() {
+            pipe.write(querystring.stringify(params), 'utf8');
+            pipe.end();
+        });
+
+        Form.createFromRequest(request).then(null, function(err) {
+            test.deepEqual(err.message, "error parsing form: bad content-type header, no content-type");
+            test.done();
+        });
+    },
+
+    "test get form multipart body": function(test) {
+
+        var request = new Request('POST', '/yomama', {
+            'content-type': 'multipart/form-data; boundary=---------------------------23701554932345',
+            'content-length': '1319'
+        }, fs.createReadStream(testbench.fixturesDir + '/form-data/fields_only.bin'));
+
+        var expected = new Form({
+            adminName: 'Seth Purcell',
+            adminLogin: 'spurcell',
+            adminPassword: 'm',
+            adminConfirm: 'm',
+            publicHost: 'www.skstest.com',
+            restrictedHost: 'skstest.sitelier.net',
+            shellName: 'Sitelier Console',
+            shellAddress: 'http://localhost:9000',
+            shellFingerprint: '',
+            submit: 'Create My Site'
+        });
+
+        Form.createFromRequest(request).then(function(form) {
+
+            test.deepEqual(form.fields, expected.fields);
+            test.ok(form.files.adminImage.size == 0);
+            test.done();
+        });
+    }
+});
 
 module.exports["basics"] = testCase({
 

@@ -38,6 +38,7 @@ var StreamUtil = require('capsela-util').StreamUtil;
 var capsela = require('capsela');
 var Server = capsela.Server;
 var Response = capsela.Response;
+var Form = capsela.Form;
 var ErrorResponse = capsela.ErrorResponse;
 var Request = capsela.Request;
 var Log = require('capsela-util').Log;
@@ -379,8 +380,7 @@ module.exports["form processing"] = testCase({
 
         server.setNext({
             service: function(request) {
-                request.getForm(function(err, form) {
-                    test.ok(!err);
+                return Form.createFromRequest(request).then(function(form) {
                     test.deepEqual(form.getFields(), expected);
                     test.equal(form.getFiles().adminImage.size, 0);
                 });
@@ -412,7 +412,7 @@ module.exports["form processing"] = testCase({
 
         // todo shouldn't this test be in Request or Form??
 
-        test.expect(7);
+        test.expect(6);
 
         var fields = {
             adminName: 'Seth Purcell',
@@ -434,13 +434,8 @@ module.exports["form processing"] = testCase({
 
                 var d = Q.defer(); // need to wait
 
-                request.getForm(function(err, form) {
+                Form.createFromRequest(request).then(function(form) {
 
-                    if (err) {
-                        console.log(err);
-                        process.exit();
-                    }
-                    test.ok(!err);
                     test.deepEqual(form.getFields(), fields);
 
                     var file = form.getFile('adminImage');
