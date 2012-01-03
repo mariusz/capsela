@@ -307,6 +307,35 @@ module.exports["dispatching"] = testCase({
                 test.done();
             }
         ).end();
+    },
+
+    "test no result falls through": function(test) {
+
+        var d = new Dispatcher();
+
+        d.setNext(new capsela.Stage(
+            function(request) {
+                return 'fell through';
+            }
+        ));
+
+        d.addController({
+            defaultAction: function(request) {
+                test.deepEqual(request.params, {
+                    answer: 57,
+                    hoop: 'a',
+                    joop: ''
+                });
+            }
+        }, 'default');
+
+        Q.when(d.service(new capsela.Request('POST', '/answer/57/hoop/a/joop/')),
+            function(result) {
+
+                test.equal(result, 'fell through');
+                test.done();
+            }
+        ).end();
     }
 });
 
