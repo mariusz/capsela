@@ -42,6 +42,47 @@ var mp = new MonkeyPatcher();
 
 var now = new Date(1980, 1, 22).getTime();
 
+module.exports["methods"] = testCase({
+
+    "test get": function(test) {
+        
+        var request = new Request();
+        test.ok(request.isGet());
+
+        request = new Request('GET');
+        test.ok(request.isGet());
+
+        request = new Request('get');
+        test.ok(request.isGet());
+
+        test.done();
+    },
+
+    "test post": function(test) {
+        var request = new Request('POST');
+        test.ok(request.isPost());
+        test.done();
+    },
+
+    "test put": function(test) {
+        var request = new Request('PUT');
+        test.ok(request.isPut());
+        test.done();
+    },
+
+    "test delete": function(test) {
+        var request = new Request('DELETE');
+        test.ok(request.isDelete());
+        test.done();
+    },
+
+    "test head": function(test) {
+        var request = new Request('HEAD');
+        test.ok(request.isHead());
+        test.done();
+    }
+});
+
 module.exports["basics"] = testCase({
 
     setUp: function(cb) {
