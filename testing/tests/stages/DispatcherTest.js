@@ -45,8 +45,11 @@ module.exports["basics"] = testCase({
 
     "test init/getConfig": function(test) {
 
+        var d = new Dispatcher('butterball');
+        test.deepEqual(d.getConfig(), {});
+
         var config = {};
-        var d = new Dispatcher('butterball', config);
+        d = new Dispatcher('butterball', config);
 
         test.equal(d.getConfig(), config);
 
