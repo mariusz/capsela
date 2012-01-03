@@ -113,7 +113,7 @@ module.exports["basics"] = testCase({
         test.done();
     },
 
-    "test getcontent with links": function(test) {
+    "test render with links": function(test) {
 
         var template = 'link1: {link1}, link2: {link2}';
         var params = {
@@ -130,6 +130,47 @@ module.exports["basics"] = testCase({
 
         test.equal(view.render(),
             'link1: root/signup/, link2: root/message/view/key/72/who/you');
+        test.done();
+    },
+
+    "test render resolves references": function(test) {
+
+        var r = new capsela.Reference();
+
+        var v = new capsela.View('<img src="{imageSource}" />', {
+            x: 42,
+            imageSource: r
+        });
+
+        var resolver = new capsela.Resolver();
+
+        resolver.resolve = function(ref) {
+            test.equal(ref, r);
+            return 'background.png';
+        }
+
+        test.deepEqual(v.render(resolver), '<img src="background.png" />');
+
+        test.done();
+    },
+
+    "test render nested views": function(test) {
+
+        var v = new capsela.View('{y} {q}', {
+            x: 42,
+            y: new capsela.View('{z} {b}', {
+                z: new capsela.View('{a}', {
+                    a: 34
+                }),
+                b: 'hi'
+            }),
+            q: new capsela.View('{r}', {
+                r: 'there'
+            })
+        });
+
+        test.deepEqual(v.render(), '34 hi there');
+
         test.done();
     }
 });

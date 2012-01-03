@@ -30,7 +30,7 @@
 var modules = ['Server', 'Stage', 'Request', 'Response',
     'Redirect', 'ErrorResponse', 'FileResponse',
     'JsonResponse', 'BlobResponse', 'ViewResponse',
-    'ClientResponse', 'Controller', 'Link',
+    'ClientResponse', 'Controller', 'Link', 'Reference', 'Resolver',
      'Route', 'HttpClient', 'Browser', 'Cookie', 'Form',
     'Session', 'SessionStore', 'View'];
 
