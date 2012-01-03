@@ -7,4 +7,4 @@ A high-level, promises-based web framework for Node.js with an emphasis on testa
 
 Resources
 ---
-  - [The Wiki](https://github.com/sitelier/capsela/wiki)
+  - [Capsela.org](http://www.capsela.org)
