@@ -161,7 +161,7 @@ module.exports["basics"] = testCase({
         test.equal(request.path, '/%E0%A4%B5%E0%A4%BE%E0%A4%B0%E0%A4%BE%E0%A4%A3%E0%A4%B8%E0%A5%80');
 
         // params should be decoded
-        test.deepEqual(request.params, params);
+        test.deepEqual(request.getParams(), params);
 
         // url should NOT be decoded
         test.equal('/%E0%A4%B5%E0%A4%BE%E0%A4%B0%E0%A4%BE%E0%A4%A3%E0%A4%B8%E0%A5%80?login=testing27%40example.com&password=chin%20chilla', request.url);

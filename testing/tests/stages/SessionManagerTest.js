@@ -37,27 +37,16 @@ var Session = capsela.Session;
 var Request = capsela.Request;
 var Response = capsela.Response;
 var Cookie = capsela.Cookie;
+var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
+
+var mp = new MonkeyPatcher();
 
 var Q = require('qq');
-
-// save the originals
-var originals = {
-    datenow: Date.now,
-    setInterval: setInterval
-};
 
 var ss = new SessionStore();
 var sm = new SessionManager(ss);
 
-module.exports = testCase({
-
-    tearDown: function(cb) {
-
-        // restore originals
-        Date.now = originals.datenow;
-        setInterval = originals.setInterval;
-        cb();
-    },
+module.exports["basics"] = testCase({
 
     "test init without store": function(test) {
 
@@ -96,8 +85,11 @@ module.exports = testCase({
                 test.equal(response, undefined);
                 test.done();
             });
-    },
+    }
+});
 
+module.exports["establishing"] = testCase({
+    
     "test establish with no id": function(test) {
 
         var mockSession = {};
@@ -184,7 +176,10 @@ module.exports = testCase({
                 test.equal(session, newSession);
                 test.done();
             });
-    },
+    }
+});
+
+module.exports["servicing"] = testCase({
 
     "test process saves non-ended session": function(test) {
 
@@ -219,8 +214,48 @@ module.exports = testCase({
 
         // add session to request
         var request = new Request('GET', '/', {
-            'cookie': 'sks-session-id=' + session.getId()
+            'cookie': '_sid=' + session.getId()
         });
+
+        Q.when(sm.service(request), function() {
+            test.done();
+        });
+    },
+
+    "test reestablish from query param": function(test) {
+
+        test.expect(2);
+
+        var session = new Session();
+
+        var mockStore = {
+
+            save: function(saved) {
+                test.equal(saved, session);
+                return Q.ref();
+            },
+
+            load: function(sid) {
+                test.equal(sid, session.getId());
+                return Q.ref(session);
+            }
+        };
+
+        var sm = new SessionManager(mockStore);
+        var response = new Response();
+
+        sm.pass = function(request) {
+            return response;
+        }
+
+        response.setHeader = function(name, value) {
+
+            // make sure header was NOT set
+            test.ok(false, "set header called for some reason");
+        };
+
+        // add session to request *as query string param*
+        var request = new Request('GET', '/?_sid=' + session.getId());
 
         Q.when(sm.service(request), function() {
             test.done();
@@ -262,13 +297,13 @@ module.exports = testCase({
         };
 
         var request = new Request('GET', '/', {
-            'cookie': 'sks-session-id=' + session.getId()
+            'cookie': '_sid=' + session.getId()
         });
 
         response.setHeader = function(name, value) {
             // make sure header was set
             test.equal('Set-Cookie', name);
-            test.equal('sks-session-id=aloha; Expires=Thu, 01 Jan 1970 05:30:00 GMT', value);
+            test.equal('_sid=aloha; Expires=Thu, 01 Jan 1970 05:30:00 GMT', value);
         };
         
         Q.when(sm.service(request), function() {
