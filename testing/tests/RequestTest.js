@@ -291,45 +291,6 @@ module.exports["basics"] = testCase({
         test.done();
     },
 
-    "test get/set raw body": function(test) {
-
-        // create a mock node request
-        var params = {login: 'testing27@example.com', password: "chinchilla"};
-
-        var pipe = new Pipe();
-
-        var request = new Request('GET', '/yomama', {}, pipe);
-        
-        request.getRawBody(function(body) {
-            
-            test.equal(querystring.stringify(params), body);
-
-            // get it again; shouldn't need to read the stream anymore
-            request.getRawBody(function(body) {
-                test.equal(querystring.stringify(params), body);
-                test.done();
-            });
-        });
-
-        // send the request body
-        process.nextTick(function() {
-            pipe.write(querystring.stringify(params), 'utf8');
-            pipe.end();
-        });
-    },
-
-    "test get raw body with no body stream": function(test) {
-        test.expect(1);
-
-        var request = new Request('GET', '/yomama', {});
-
-        request.getRawBody(function(body) {
-            test.equal('', body);
-            test.done();
-        });
-
-    },
-
     "test getBodyObject success": function(test) {
 
         var bodyObj = {};
@@ -341,7 +302,7 @@ module.exports["basics"] = testCase({
             function(obj) {
                 test.deepEqual(obj, bodyObj);
                 test.done();
-            });
+            }).end();
 
         // stream the request body
         pipe.end(JSON.stringify(bodyObj), 'utf8');
@@ -349,16 +310,15 @@ module.exports["basics"] = testCase({
 
     "test getBodyObject bad JSON": function(test) {
 
-        var bodyObj = {};
         var pipe = new Pipe();
 
         var request = new Request('POST', '/yomama', {}, pipe);
 
         request.getBodyObject().then(null,
             function(err) {
-                test.equal(err.message, 'body is not valid JSON');
+                test.equal(err.message, 'request body is not valid JSON');
                 test.done();
-            });
+            }).end();
 
         // stream the request body
         pipe.end('yo, what gives?', 'utf8');
