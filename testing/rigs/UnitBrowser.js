@@ -85,9 +85,6 @@ var UnitBrowser = Browser.extend({
         // you know we need this
         request.headers.host = hostname;
 
-        // slap a pipe on that bad boy
-        request.bodyStream = new Pipe();
-
         // do any required preparation
         if (this.prepRequest) {
             this.prepRequest(request);

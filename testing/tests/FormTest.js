@@ -43,16 +43,8 @@ module.exports["parsing"] = testCase({
 
         var params = {login: 'testing27@example.com', password: "chinchilla"};
 
-        var pipe = new Pipe();
-
         var request = new Request('POST', '/yomama', {
             'content-type': 'application/x-www-form-urlencoded'
-        }, pipe);
-
-        // stream the request body
-        process.nextTick(function() {
-            pipe.write(querystring.stringify(params), 'utf8');
-            pipe.end();
         });
 
         Form.createFromRequest(request).then(function(form) {
@@ -60,26 +52,24 @@ module.exports["parsing"] = testCase({
             test.deepEqual(params, form.getFields());
             test.done();
         });
+
+        // stream the request body
+        request.getBodyStream().end(querystring.stringify(params), 'utf8');
     },
 
     "test parse form without content type": function(test) {
 
         var params = {login: 'testing27@example.com', password: "chinchilla"};
 
-        var pipe = new Pipe();
-
-        var request = new Request('POST', '/yomama', {}, pipe);
-
-        // stream the request body
-        process.nextTick(function() {
-            pipe.write(querystring.stringify(params), 'utf8');
-            pipe.end();
-        });
+        var request = new Request('POST', '/yomama', {});
 
         Form.createFromRequest(request).then(null, function(err) {
             test.deepEqual(err.message, "error parsing form: bad content-type header, no content-type");
             test.done();
         });
+
+        // stream the request body
+        request.getBodyStream().end(querystring.stringify(params), 'utf8');
     },
 
     "test get form multipart body": function(test) {
@@ -186,7 +176,7 @@ module.exports["basics"] = testCase({
             password: 'bully!'
         });
 
-        StreamUtil.buffer(pipe).then(
+        pipe.getData().then(
             function(data) {
                 test.equal(data.toString(),
 '--this is a boundary' + newline + '\

@@ -56,9 +56,9 @@ var MockResponse = Pipe.extend({
 
         var t = this;
 
-        StreamUtil.buffer(this).then(
-            function(buffer) {
-                t.written = buffer;
+        this.getData().then(
+            function(data) {
+                t.written = data;
             }
         );
     },
