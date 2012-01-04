@@ -100,6 +100,15 @@ module.exports["parsing"] = testCase({
         test.equal(stage1.addStage(stage4), stage1);
         test.equal(stage3.next, stage4);
 
+        // test adding a raw function
+
+        test.equal(stage4.addStage(function(request) {
+            return "hi there!";
+        }), stage4);
+
+
+        test.equal(stage4.pass({}), "hi there!");
+
         test.done();
     },
 
