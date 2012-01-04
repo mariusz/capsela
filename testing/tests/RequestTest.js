@@ -294,9 +294,8 @@ module.exports["basics"] = testCase({
     "test getBodyObject success": function(test) {
 
         var bodyObj = {};
-        var pipe = new Pipe();
 
-        var request = new Request('POST', '/yomama', {}, pipe);
+        var request = new Request('POST', '/yomama', {});
 
         request.getBodyObject().then(
             function(obj) {
@@ -305,14 +304,12 @@ module.exports["basics"] = testCase({
             }).end();
 
         // stream the request body
-        pipe.end(JSON.stringify(bodyObj), 'utf8');
+        request.getBodyStream().end(JSON.stringify(bodyObj), 'utf8');
     },
 
     "test getBodyObject bad JSON": function(test) {
 
-        var pipe = new Pipe();
-
-        var request = new Request('POST', '/yomama', {}, pipe);
+        var request = new Request('POST', '/yomama', {});
 
         request.getBodyObject().then(null,
             function(err) {
@@ -321,6 +318,6 @@ module.exports["basics"] = testCase({
             }).end();
 
         // stream the request body
-        pipe.end('yo, what gives?', 'utf8');
+        request.getBodyStream().end('yo, what gives?', 'utf8');
     }
 });
