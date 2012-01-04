@@ -128,17 +128,17 @@ module.exports = testCase({
         Date.now = function(){return 72000;};
 
         var session = new Session();
-        test.ok(session.stillValid());
+        test.ok(session.stillValid(86400));
 
         Date.now = function() {
             return 72000 + (global.config.session.timeout * 1000) - 1;
         };
-        test.ok(session.stillValid());
+        test.ok(session.stillValid(86400));
 
         Date.now = function() {
             return 72000 + (global.config.session.timeout * 1000);
         };
-        test.ok(!session.stillValid());
+        test.ok(!session.stillValid(86400));
 
         test.done();
     },
@@ -148,12 +148,11 @@ module.exports = testCase({
         Date.now = function(){return 72000;};
 
         var session = new Session();
-        test.ok(session.stillValid());
+        test.ok(session.stillValid(86400));
 
-        session.end(function() {
-            test.ok(!session.stillValid());
-            test.done();
-        });
+        session.end();
+        test.ok(!session.stillValid(86400));
+        test.done();
     },
 
     "test end": function(test) {
@@ -162,11 +161,10 @@ module.exports = testCase({
         
         test.equal(false, session.isEnded());
 
-        session.end(function() {
-            test.ok(session.isEnded());
-            test.ok(!session.stillValid());
-            test.done();
-        });
+        session.end();
+        test.ok(session.isEnded());
+        test.ok(!session.stillValid());
+        test.done();
     }
 
 });

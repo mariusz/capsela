@@ -204,9 +204,9 @@ module.exports["construct/start"] = testCase({
             }
         });
 
-        server.start(function() {
+        server.start().then(function() {
             fakeServer.onRequest(req, res);
-        });
+        }).end();
     },
 
     "test construct/start secure with TLS-PSK connection": function(test) {
@@ -267,9 +267,9 @@ module.exports["construct/start"] = testCase({
             test.done();
         });
 
-        server.start(function() {
+        server.start().then(function() {
             fakeServer.onRequest(req, res);
-        });
+        }).end();
     },
 
     "test construct/start insecure": function(test) {
@@ -312,9 +312,9 @@ module.exports["construct/start"] = testCase({
             test.done();
         });
 
-        server.start(function() {
+        server.start().then(function() {
             fakeServer.onRequest(req, res);
-        });
+        }).end();
     },
 
     "test stop": function(test) {
@@ -351,10 +351,14 @@ module.exports["construct/start"] = testCase({
 
         var server = new Server(9000);
 
-        server.start(function() {
-            server.stop();
-            test.done();
-        });
+        server.start().then(
+            function() {
+                return server.stop();
+            }
+        ).then(
+            function() {
+                test.done();
+            }).end();
     }
 });
 

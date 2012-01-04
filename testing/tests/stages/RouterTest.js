@@ -178,7 +178,7 @@ module.exports = testCase({
         var request = new Request('POST', '/');
 
         router.install('default', '/',
-                function(request, cb) {
+                function(request) {
                     return new Response();
                 });
 

@@ -50,9 +50,9 @@ module.exports["basics"] = testCase({
 
     "test init without store": function(test) {
 
-        test.throws(function() {
-            new SessionManager();
-        });
+        var sm = new SessionManager();
+
+        test.ok(sm.store instanceof SessionStore);
 
         test.done();
     },
@@ -92,22 +92,13 @@ module.exports["establishing"] = testCase({
     
     "test establish with no id": function(test) {
 
-        var mockSession = {};
-
-        var mockStore = {
-
-            createSession: function() {
-                return mockSession;
-            }
-        };
-
-        var sm = new SessionManager(mockStore);
+        var sm = new SessionManager();
         var result = {};
 
         sm.establish(undefined, result).then(
             function(session) {
                 test.ok(result.created);
-                test.equal(session, mockSession);
+                test.ok(session instanceof Session);
                 test.done();
             });
     },
@@ -144,7 +135,7 @@ module.exports["establishing"] = testCase({
 
     "test establish w/expired session ID": function(test) {
 
-        test.expect(4);
+        test.expect(5);
 
         var mockSession = {
             stillValid: function() {
@@ -153,17 +144,11 @@ module.exports["establishing"] = testCase({
             }
         };
 
-        var newSession = {};
-
         var mockStore = {
 
             load: function(id) {
                 test.equal(id, 'the-xx');
                 return Q.ref(mockSession);
-            },
-            
-            createSession: function() {
-                return Q.ref(newSession);
             }
         };
 
@@ -173,7 +158,8 @@ module.exports["establishing"] = testCase({
         sm.establish('the-xx', result).then(
             function(session) {
                 test.ok(result.created);
-                test.equal(session, newSession);
+                test.ok(session instanceof Session);
+                test.notEqual(session, mockSession);
                 test.done();
             });
     }
@@ -181,7 +167,7 @@ module.exports["establishing"] = testCase({
 
 module.exports["servicing"] = testCase({
 
-    "test process saves non-ended session": function(test) {
+    "test save non-ended session": function(test) {
 
         test.expect(1);
 
@@ -262,7 +248,7 @@ module.exports["servicing"] = testCase({
         });
     },
 
-    "test postprocess kills ended session": function(test) {
+    "test service kills ended session": function(test) {
 
         test.expect(3);
 
@@ -289,11 +275,8 @@ module.exports["servicing"] = testCase({
         var response = new Response();
 
         sm.pass = function(request) {
-            var d = Q.defer();
-            request.session.end(function() {
-                d.resolve(response);
-            });
-            return d.promise;
+            request.session.end();
+            return response;
         };
 
         var request = new Request('GET', '/', {
@@ -309,7 +292,45 @@ module.exports["servicing"] = testCase({
         Q.when(sm.service(request), function() {
             test.done();
         });
+    },
+
+    "test service waits for promise": function(test) {
+
+        test.expect(1);
+
+        var session = new Session();
+        var sm = new SessionManager();
+        var response = new Response();
+
+        sm.pass = function(request) {
+            return Q.ref(response);
+        };
+
+        response.setHeader = function(name, value) {
+            test.ok(true);
+        };
+        
+        var request = new Request();
+        
+        Q.when(sm.service(request), function() {
+            test.done();
+        });
+    },
+
+    "test service ignores empty response": function(test) {
+
+        var session = new Session();
+        var sm = new SessionManager();
+        var response = new Response();
+
+        sm.pass = function(request) {
+            return Q.ref();
+        };
+
+        var request = new Request();
+
+        Q.when(sm.service(request), function() {
+            test.done();
+        });
     }
 });
-
-// make sure if roles change that all extant sessions reflect this!
