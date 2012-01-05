@@ -55,6 +55,13 @@ module.exports["parsing"] = testCase({
         test.done();
     },
 
+    "test isReady": function(test) {
+
+        var stage = new Stage();
+        test.equal(stage.isReady(), true);
+        test.done();
+    },
+
     "test pass no next stage": function(test) {
 
         var stage = new Stage();

@@ -45,14 +45,36 @@ module.exports["basics"] = testCase({
 
     "test init/getConfig": function(test) {
 
+        test.expect(6);
+
         var d = new Dispatcher('butterball');
         test.deepEqual(d.getConfig(), {});
 
         var config = {};
-        d = new Dispatcher('butterball', config);
+        d = new Dispatcher('butterball', testbench.fixturesDir + '/controllers', config);
 
         test.equal(d.getConfig(), config);
+        
+        var exp = ['default', 'test1'];
+        
+        d.loadController = function(baseDir, name) {
+            test.equal(baseDir, testbench.fixturesDir + '/controllers');
+            test.equal(name, exp.shift());
+        };
 
+        Q.when(d.isReady(),
+            function() {
+                test.done();
+            }).end();
+    },
+
+    "test isReady": function(test) {
+
+        var d = new Dispatcher('butterball');
+
+        d.ready = 75;
+
+        test.equal(d.isReady(), 75);
         test.done();
     },
 

@@ -62,7 +62,7 @@ module.exports["cache control"] = testCase({
         });
         var res = new mocks.Response();
 
-        var server = new Server(80);
+        var server = new Server();
 
         server.setNext({
             service: function(request) {
@@ -90,7 +90,7 @@ module.exports["cache control"] = testCase({
         });
         var res = new mocks.Response();
 
-        var server = new Server(80);
+        var server = new Server();
 
         server.setNext({
             service: function(request) {
@@ -133,7 +133,7 @@ module.exports["construct/start"] = testCase({
 
         test.expect(2);
 
-        var server = new Server(80);
+        var server = new Server();
 
         server.setNext({
             service: function(request) {
@@ -162,6 +162,84 @@ module.exports["construct/start"] = testCase({
         var res = new mocks.Response();
 
         server.handleRequest(req, res);
+    },
+
+    "test start waits for all stages": function(test) {
+
+        test.expect(5);
+
+        // mock http
+
+        var fakeServer = {
+
+            listen: function(port, host, cb) {
+                test.equals(port, 80);
+                test.ok(host == null);
+
+                if (cb) {
+                    process.nextTick(cb);
+                }
+            }
+        };
+
+        mp.patch(http, 'createServer', function(options, cb) {
+            fakeServer.onRequest = cb;
+            return fakeServer;
+        });
+
+        var server = new Server();
+
+        var d = [
+            Q.defer(),
+            Q.defer(),
+            Q.defer()
+        ];
+
+        var started = false;
+
+        var p = d.map(function(def) {
+            return def.promise.then(
+                function() {
+                    test.ok(started == false);
+                }
+            );
+        });
+
+        server.isReady = function() {
+            return p[0];
+        };
+
+        var stage1 = new capsela.Stage();
+
+        stage1.isReady = function() {
+            return p[1];
+        };
+        
+        var stage2 = new capsela.Stage();
+
+        stage2.isReady = function() {
+            return p[2];
+        };
+
+        server.addStage(stage1);
+        server.addStage(stage2);
+
+        server.start().then(function() {
+            started = true;
+            test.done();
+        }).end();
+
+        setTimeout(function() {
+            d[0].resolve();
+        }, 10);
+
+        setTimeout(function() {
+            d[1].resolve();
+        }, 20);
+
+        setTimeout(function() {
+            d[2].resolve();
+        }, 4);
     },
 
     "test construct/start secure": function(test) {
@@ -198,10 +276,8 @@ module.exports["construct/start"] = testCase({
 
         var server = new Server(443, {secure: true});
 
-        server.setNext({
-            service: function(request) {
-                test.ok(request.isSecure());
-            }
+        server.addStage(function(request) {
+            test.ok(request.isSecure());
         });
 
         server.start().then(function() {
@@ -245,12 +321,10 @@ module.exports["construct/start"] = testCase({
 
         var server = new Server(443, serverOpts);
 
-        server.setNext({
-            service: function(request) {
-                test.ok(request.isSecure());
-                // make sure the pskId was copied from the request's connection up to the request
-                test.equal(request.getPskId(), 'pre-shared-key-id');
-            }
+        server.addStage(function(request) {
+            test.ok(request.isSecure());
+            // make sure the pskId was copied from the request's connection up to the request
+            test.equal(request.getPskId(), 'pre-shared-key-id');
         });
 
         var req = new mocks.Request();
@@ -297,10 +371,8 @@ module.exports["construct/start"] = testCase({
 
         var server = new Server(9001);
 
-        server.setNext({
-            service: function(request) {
-                test.ok(!request.isSecure());
-            }
+        server.addStage(function(request) {
+            test.ok(!request.isSecure());
         });
 
         var req = new mocks.Request();
