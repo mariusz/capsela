@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Sitelier Inc.
+ * Copyright (C) 2011 Sitelier Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * Author: Seth Purcell
- * Date: 4/6/11
+ * Date: 1/4/12
  */
 
 "use strict";
@@ -29,9 +29,20 @@
 var testbench = require(__dirname + '/../TestBench');
 var testCase = require('nodeunit').testCase;
 
-var Request = require('capsela').Request;
-var Controller = require('capsela').Controller;
+var capsela = require('capsela');
 
 module.exports["basics"] = testCase({
 
+    "test init": function(test) {
+
+        var error = new capsela.Error('oh no!', 404, new Error('bummer'));
+
+        test.equal(error.message, 'oh no!');
+        test.equal(error.code, 404);
+        test.equal(error.antecedent.message, 'bummer');
+        test.ok(error instanceof Error);
+        test.ok(error instanceof capsela.Error);
+
+        test.done();
+    }
 });
