@@ -88,6 +88,14 @@ module.exports["parsing"] = testCase({
 
         test.equal(stage.setNext(mockStage), mockStage);
         test.equal(stage.pass(mockRequest), mockResponse);
+
+        // test adding a raw function
+        stage.setNext(function(request) {
+            return 'hi!';
+        });
+
+        test.equal(stage.pass({}), "hi!");
+
         test.done();
     },
 
