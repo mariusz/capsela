@@ -96,7 +96,7 @@ var MockHost = Class.extend({
 
         // pretend to have a socket
 
-        intervalId = global.SET_INTERVAL(function() {
+        intervalId = setInterval(function() {
             console.log('waiting for ' + options.method + ' ' + options.host + options.path);
         }, 1000);
 
