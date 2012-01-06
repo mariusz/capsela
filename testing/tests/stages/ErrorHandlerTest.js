@@ -36,7 +36,6 @@ var Response = capsela.Response;
 var Request = capsela.Request;
 var Stage = capsela.Stage;
 var ErrorHandler = capsela.stages.ErrorHandler;
-var ErrorResponse = capsela.ErrorResponse;
 var Q = require('qq');
 
 module.exports = testCase({
@@ -45,13 +44,12 @@ module.exports = testCase({
 
         var request = new Request();
         var handler = new ErrorHandler('the-template');
-        var error = new Error("file not found");
         var response = new Response();
 
-        handler.setNext(new Stage(
+        handler.setNext(
             function(request) {
                 return response;
-            }));
+            });
 
         Q.when(handler.service(request),
             function(res) {
@@ -60,26 +58,41 @@ module.exports = testCase({
             });
     },
 
-    "test intercept error": function(test) {
+    "test catch empty response": function(test) {
+
+        var request = new Request();
+        var handler = new ErrorHandler('the-template');
+        
+        Q.when(handler.service(request),
+            function(response) {
+
+                test.equal(response.statusCode, 404);
+                test.equal(response.view.getTemplate(), 'the-template');
+                test.done();
+            }).end();
+    },
+
+    "test catch thrown error": function(test) {
 
         var request = new Request();
         var handler = new ErrorHandler('the-template');
         var error = new Error("file not found");
 
-        handler.setNext(new Stage(
+        error.code = 404;
+
+        handler.setNext(
             function(request) {
-                return new ErrorResponse(error, 404);
-            }));
+                throw error;
+            });
 
         Q.when(handler.service(request),
             function(response) {
                 test.equal(response.view.getTemplate(), 'the-template');
                 test.deepEqual(response.view.getParams(), {
-                    error: error,
-                    code: 404
+                    error: error
                 });
                 test.equal(response.statusCode, 404);
                 test.done();
-            });
+            }).end();
     }
 });
