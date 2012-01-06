@@ -49,19 +49,19 @@ module.exports = testCase({
         cb();
     },
 
-    "test init": function(test) {
-
-        test.expect(1);
-
-        // make sure a timer is installed pointing to the cleanup function
-
-        setInterval = function(cb, delay) {
-            test.equal(delay, global.config.session.cleanup_interval * 1000);
-        };
-
-        var sm = new SessionStore();
-        test.done();
-    },
+//    "test init": function(test) {
+//
+//        test.expect(1);
+//
+//        // make sure a timer is installed pointing to the cleanup function
+//
+//        setInterval = function(cb, delay) {
+//            test.equal(delay, global.config.session.cleanup_interval * 1000);
+//        };
+//
+//        var sm = new SessionStore();
+//        test.done();
+//    },
 
     "test save": function(test) {
 
