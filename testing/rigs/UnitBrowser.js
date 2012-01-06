@@ -39,7 +39,6 @@ var StreamUtil = require('capsela-util').StreamUtil;
 var Pipe = require('capsela-util').Pipe;
 var Log = require('capsela-util').Log;
 var Cookie = capsela.Cookie;
-var Logger = require('capsela-util').Logger;
 
 var baseTemplate =
 "<!DOCTYPE html>\
@@ -53,8 +52,6 @@ var baseTemplate =
 </html>";
 
 var UnitBrowser = Browser.extend({
-        
-    mixin: Logger
 },
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -65,8 +62,6 @@ var UnitBrowser = Browser.extend({
     init: function(stage) {
         this.compositor = new capsela.stages.Compositor(baseTemplate);
         this.compositor.setNext(stage);
-        this.LOG = new Log();
-        this.LOG.watch(this);
         this._super();
     },
 
@@ -89,10 +84,6 @@ var UnitBrowser = Browser.extend({
         if (this.prepRequest) {
             this.prepRequest(request);
         }
-
-        // don't emit - just log directly - to avoid confusing tests that watch the log
-        t.LOG.log(Log.DEBUG, '(unit browser) ' + request.method.toUpperCase() + ' ' +
-            (request.secure ? 'https://' : 'http://') + hostname + request.path);
 
         // pass log messages up
         request.on('log', function(p, m) {
