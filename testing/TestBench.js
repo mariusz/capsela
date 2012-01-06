@@ -26,52 +26,22 @@
 
 "use strict";
 
-global.SET_INTERVAL = setInterval;
-
-// mock setInterval so tests don't hang
-setInterval = function(cb, delay) {
-};
-
 // stub out real network access
 var http = require('http');
 var https = require('https');
 
-console.log("stubbing out HTTP access");
-
-http.request = function(options) {
-    console.log("NETWORK ACCESS FROM TEST:");
-    console.log(options);
-    var err = new Error("network access from test");
-    console.log(err.stack);
-    throw err;
-};
-
-https.request = function(options) {
-    console.log(new Error("NETWORK ACCESS FROM TEST").stack);
-};
-
-// set up the global log
-// todo get rid of this
-var Log = require('capsela-util').Log;
-exports.log = new Log();
-global.log = new Log();
-//global.log.on('event', function(event) {
-//    if (event.priority < 5) {
-//        process.stderr.write(event.toString() + '\n');
-//    }
-//    else {
-//        process.stdout.write(event.toString() + '\n');
-//    }
-//});
-
-// make sure there is a minimal global.config
-// TODO: get rid of global.config altogether
-if (!global.config) {
-    global.config = {};
-}
-global.config.session = {
-    cleanup_interval: 600,
-    timeout: 86400
-};
+//console.log("stubbing out HTTP access");
+//
+//http.request = function(options) {
+//    console.log("NETWORK ACCESS FROM TEST:");
+//    console.log(options);
+//    var err = new Error("network access from test");
+//    console.log(err.stack);
+//    throw err;
+//};
+//
+//https.request = function(options) {
+//    console.log(new Error("NETWORK ACCESS FROM TEST").stack);
+//};
 
 module.exports.fixturesDir = __dirname + '/fixtures';
