@@ -34,39 +34,29 @@ var Session = capsela.Session;
 var crypto = require('crypto');
 
 // save the originals
-var datenow = Date.now;
-var origSetInterval = setInterval;
-var createHash = crypto.createHash;
-var random = Math.random;
-var makeId = Session.makeId;
+var mp = require('capsela-util').MonkeyPatcher;
 
 var SessionStore = capsela.SessionStore;
 
 module.exports = testCase({
 
-    tearDown: function(cb) {
-
-        // restore originals
-        Date.now = datenow;
-        setInterval = origSetInterval;
-        crypto.createHash = createHash;
-        Math.random = random;
-        Session.makeId = makeId;
-        cb();
-    },
+    setUp: mp.setUp,
+    tearDown: mp.tearDown,
 
     "test makeId": function(test) {
 
         test.expect(5);
 
-        Math.random = function() {
+        mp.patch(Math, 'random', function() {
             test.ok(true);
             return 'random';
-        }
+        });
 
-        Date.now = function(){return 'now'};
+        mp.patch(Date, 'now', function(){
+            return 'now'
+        });
 
-        crypto.createHash = function(alg) {
+        mp.patch(crypto, 'createHash', function(alg) {
 
             test.equal(alg, 'md5');
 
@@ -81,7 +71,7 @@ module.exports = testCase({
                     return 'mock id';
                 }
             }
-        };
+        });
 
         test.equal(Session.makeId(), 'mock id');
         test.done();
@@ -91,15 +81,15 @@ module.exports = testCase({
 
         test.expect(4);
 
-        Date.now = function() {
+        mp.patch(Date, 'now', function() {
             test.ok(true);
             return 72000;
-        };
+        });
 
-        Session.makeId = function() {
+        mp.patch(Session, 'makeId', function() {
             test.ok(true);
             return 'session-id';
-        }
+        });
 
         var session = new Session();
 
@@ -110,13 +100,18 @@ module.exports = testCase({
     },
 
     "test touch": function(test) {
+
+        var now = 72000;
         
-        Date.now = function(){return 72000;};
+        mp.patch(Date, 'now', function() {
+            return now;
+        });
 
         var session = new Session();
 
         test.equal(72000, session.getLastSaveTime());
-        Date.now = function() {return 73000;};
+        
+        now = 73000;
         session.touch();
         test.equal(73000, session.getLastSaveTime());
 
@@ -125,19 +120,19 @@ module.exports = testCase({
 
     "test stillValid": function(test) {
 
-        Date.now = function(){return 72000;};
+        var now = 72000;
+        
+        mp.patch(Date, 'now', function() {
+            return now;
+        });
 
         var session = new Session();
         test.ok(session.stillValid(86400));
 
-        Date.now = function() {
-            return 72000 + (global.config.session.timeout * 1000) - 1;
-        };
+        now += (86400 * 1000) - 1;
         test.ok(session.stillValid(86400));
 
-        Date.now = function() {
-            return 72000 + (global.config.session.timeout * 1000);
-        };
+        now += (86400 * 1000);
         test.ok(!session.stillValid(86400));
 
         test.done();
@@ -145,7 +140,11 @@ module.exports = testCase({
 
     "test stillValid after end": function(test) {
 
-        Date.now = function(){return 72000;};
+        var now = 72000;
+
+        mp.patch(Date, 'now', function() {
+            return now;
+        });
 
         var session = new Session();
         test.ok(session.stillValid(86400));
