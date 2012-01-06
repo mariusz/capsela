@@ -72,6 +72,25 @@ module.exports = testCase({
             }).end();
     },
 
+    "test catch empty promise": function(test) {
+
+        var request = new Request();
+        var handler = new ErrorHandler('the-template');
+
+        handler.setNext(
+            function(request) {
+                return Q.ref();
+            });
+
+        Q.when(handler.service(request),
+            function(response) {
+
+                test.equal(response.statusCode, 404);
+                test.equal(response.view.getTemplate(), 'the-template');
+                test.done();
+            }).end();
+    },
+
     "test catch thrown error": function(test) {
 
         var request = new Request();
