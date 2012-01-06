@@ -39,7 +39,6 @@ var capsela = require('capsela');
 var Server = capsela.Server;
 var Response = capsela.Response;
 var Form = capsela.Form;
-var ErrorResponse = capsela.ErrorResponse;
 var Request = capsela.Request;
 var Log = require('capsela-util').Log;
 var Q = require('qq');
@@ -138,24 +137,15 @@ module.exports["construct/start"] = testCase({
         server.setNext({
             service: function(request) {
                 now += 88;
-                return new ErrorResponse(new Error("server error, dude"));
+                return new Response(202);
             }
         });
 
         server.on('log', function(priority, message) {
 
-            if (priority == Log.ERROR) {
-                test.ok(message.indexOf('server error, dude') >= 0);
-                logged++;
-            }
-            else if (priority == Log.INFO) {
-                test.equal(message, '- GET / HTTP/1.1 500 88');
-                logged++;
-            }
-
-            if (logged == 2) {
-                test.done();
-            }
+            test.equal(priority, Log.INFO);
+            test.equal(message, '- GET / HTTP/1.1 202 88');
+            test.done();
         });
 
         var req = new mocks.Request();
@@ -164,9 +154,82 @@ module.exports["construct/start"] = testCase({
         server.handleRequest(req, res);
     },
 
-    "test start waits for all stages": function(test) {
+    "test start fails on stage error": function(test) {
 
-        test.expect(5);
+        var server = new Server();
+        var stage = new capsela.Stage();
+
+        server.addStage(stage);
+
+        stage.isReady = function() {
+            return Q.reject("oh dear");
+        }
+
+        server.start().then(
+            null,
+            function(reason) {
+                test.equal(reason, "oh dear");
+                test.done();
+            }
+        );
+    },
+
+    "test isReady": function(test) {
+
+        var server = new Server();
+
+        var d = [
+            Q.defer(),
+            Q.defer(),
+            Q.defer()
+        ];
+
+        var ready = false;
+
+        var p = d.map(function(def) {
+            return def.promise.then(
+                function() {
+                    test.ok(ready == false);
+                }
+            );
+        });
+
+        var stage1 = new capsela.Stage();
+        
+        stage1.isReady = function() {
+            return p[1];
+        };
+
+        var stage2 = new capsela.Stage();
+
+        stage2.isReady = function() {
+            return p[2];
+        };
+
+        server.addStage(stage1);
+        server.addStage(stage2);
+
+        server.isReady().then(function() {
+            ready = true;
+            test.done();
+        }).end();
+
+        setTimeout(function() {
+            d[0].resolve();
+        }, 10);
+
+        setTimeout(function() {
+            d[1].resolve();
+        }, 20);
+
+        setTimeout(function() {
+            d[2].resolve();
+        }, 4);
+    },
+
+    "test start calls isReady": function(test) {
+
+        test.expect(3);
 
         // mock http
 
@@ -189,57 +252,14 @@ module.exports["construct/start"] = testCase({
 
         var server = new Server();
 
-        var d = [
-            Q.defer(),
-            Q.defer(),
-            Q.defer()
-        ];
-
-        var started = false;
-
-        var p = d.map(function(def) {
-            return def.promise.then(
-                function() {
-                    test.ok(started == false);
-                }
-            );
-        });
-
         server.isReady = function() {
-            return p[0];
+            test.ok(true);
+            return Q.ref();
         };
-
-        var stage1 = new capsela.Stage();
-
-        stage1.isReady = function() {
-            return p[1];
-        };
-        
-        var stage2 = new capsela.Stage();
-
-        stage2.isReady = function() {
-            return p[2];
-        };
-
-        server.addStage(stage1);
-        server.addStage(stage2);
 
         server.start().then(function() {
-            started = true;
             test.done();
         }).end();
-
-        setTimeout(function() {
-            d[0].resolve();
-        }, 10);
-
-        setTimeout(function() {
-            d[1].resolve();
-        }, 20);
-
-        setTimeout(function() {
-            d[2].resolve();
-        }, 4);
     },
 
     "test construct/start secure": function(test) {
@@ -584,7 +604,8 @@ module.exports["request processing"] = testCase({
         res.on('end', function() {
             test.equal(404, res.statusCode);
             test.deepEqual(res.headers, {
-                'Content-Type': 'text/html; charset=utf-8',
+                'Content-Type': 'text/plain; charset=utf-8',
+                'Content-Length': '28',
                 Date: nowUTC,
                 Server: 'Capsela'
             });
