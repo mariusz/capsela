@@ -92,9 +92,20 @@ module.exports["basics"] = testCase({
         test.done();
     },
 
-    "test setUp": function(test) {
+    "test load controller": function(test) {
 
-//        test.expect(4);
+        var d = new Dispatcher();
+
+        var c = d.loadController(testbench.fixturesDir + '/controllers', 'test1');
+
+        test.equal(c.name, 'test1');
+        test.equal(c.dispatcher, d);
+        test.equal(c.homeDir, testbench.fixturesDir + '/controllers/test1');
+
+        test.done();
+    },
+
+    "test setUp": function(test) {
 
         var d = new Dispatcher();
 
@@ -110,6 +121,24 @@ module.exports["basics"] = testCase({
                 test.done();
             }
         ).end();
+    },
+
+    "test setUp with load controller error": function(test) {
+
+        var d = new Dispatcher();
+
+        var exp = ['default', 'test1'];
+
+        d.loadController = function(baseDir, name) {
+            throw new Error("in our bedroom after the war");
+        };
+
+        d.setUp(testbench.fixturesDir + '/controllers').then(
+            null,
+            function(err) {
+                test.equal(err.message, 'in our bedroom after the war');
+                test.done();
+            });
     }
 });
 
