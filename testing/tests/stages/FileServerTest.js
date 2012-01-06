@@ -78,11 +78,13 @@ module.exports = testCase({
 
         var request = new Request('GET', '/resources/../../etc/passwd');
 
-        Q.when(fileServer.service(request),
-            function(response) {
-                test.equal(response.statusCode, 403);
-                test.done();
-            });
+        try {
+            fileServer.service(request);
+        }
+        catch (err) {
+            test.equal(err.code, 403);
+            test.done();
+        }
     },
 
     "test url containing baseUrl passes through": function(test) {
@@ -135,10 +137,10 @@ module.exports = testCase({
 
         var request = new Request('GET', '/resources/chickens.jpg');
 
-        Q.when(fileServer.service(request),
-            function(response) {
-                test.equal(response.statusCode, 404);
-                test.equal(response.error.message, 'file not found');
+        Q.when(fileServer.service(request), null,
+            function(err) {
+                test.equal(err.code, 404);
+                test.equal(err.message, 'file not found');
                 test.done();
             });
     },
@@ -216,10 +218,10 @@ module.exports = testCase({
 
         var request = new Request('GET', '/resources');
 
-        Q.when(fileServer.service(request),
-            function(response) {
-                test.equal(response.statusCode, 404);
-                test.equal(response.error.message, 'file not found');
+        Q.when(fileServer.service(request), null,
+            function(err) {
+                test.equal(err.code, 404);
+                test.equal(err.message, 'file not found');
                 test.done();
             });
     },
@@ -413,36 +415,44 @@ module.exports = testCase({
 
         var request = new Request('GET', '/resources/more/scripts/hi.js');
 
-        Q.when(fileServer.service(request), function(response) {
-            test.equal(response.statusCode, 404);
+        Q.when(fileServer.service(request), null,
+            function(err) {
+                test.equal(err.code, 404);
 
-            request = new Request('GET', '/resources/more/scripts/hi.js');
-            fileServer.addPath("/resources/more", testbench.fixturesDir + '/fileserver2');
+                request = new Request('GET', '/resources/more/scripts/hi.js');
+                fileServer.addPath("/resources/more", testbench.fixturesDir + '/fileserver2');
 
-            Q.when(fileServer.service(request), function(response) {
+                return fileServer.service(request);
+            }
+        ).then(
+            function(response) {
                 test.equal(response.statusCode, 200);
 
                 request = new Request('GET', '/resources/evenmore/styles/other.css');
 
-                Q.when(fileServer.service(request), function(response) {
-                    test.equal(response.statusCode, 404);
+                return fileServer.service(request);
+            }
+        ).then(null,
+            function(err) {
+                test.equal(err.code, 404);
 
-                    request = new Request('GET', '/resources/evenmore/styles/other.css');
-                    fileServer.addPath("/resources/evenmore", testbench.fixturesDir + '/fileserver3');
+                request = new Request('GET', '/resources/evenmore/styles/other.css');
+                fileServer.addPath("/resources/evenmore", testbench.fixturesDir + '/fileserver3');
 
-                    Q.when(fileServer.service(request), function(response) {
-                        test.equal(response.statusCode, 200);
+                return fileServer.service(request);
+            }
+        ).then(
+            function(response) {
+                test.equal(response.statusCode, 200);
 
-                        request = new Request('GET', '/resources/more/scripts/hi.js');
+                request = new Request('GET', '/resources/more/scripts/hi.js');
 
-                        Q.when(fileServer.service(request), function(response) {
-                            test.equal(response.statusCode, 200);
-
-                            test.done();
-                        });
-                    });
-                });
-            });
-        });
+                return fileServer.service(request);
+            }
+        ).then(
+            function(response) {
+                test.equal(response.statusCode, 200);
+                test.done();
+        }).end();
     }
 });
