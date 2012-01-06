@@ -30,9 +30,9 @@
 var modules = ['Server', 'Stage', 'Request', 'Response',
     'Redirect', 'ErrorResponse', 'FileResponse',
     'JsonResponse', 'BlobResponse', 'ViewResponse',
-    'ClientResponse', 'Controller', 'Link', 'Reference', 'Resolver',
+    'ClientResponse', 'Link', 'Reference', 'Resolver',
      'Route', 'HttpClient', 'Browser', 'Cookie', 'Form',
-    'Session', 'SessionStore', 'View'];
+    'Session', 'SessionStore', 'View', 'Error'];
 
 function loadModule(name) {
     var module = require(__dirname + '/lib/' + name);
