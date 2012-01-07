@@ -100,7 +100,7 @@ module.exports["basics"] = testCase({
 
     "test init secure": function(test) {
         
-        var request = new Request(null, null, null, null, true);
+        var request = new Request(null, null, null, null, 'https');
 
         test.ok(request.isSecure());
         test.equal(request.getPskId(), undefined);
@@ -113,7 +113,6 @@ module.exports["basics"] = testCase({
 
         var request = new Request(null, null, null, null, null, 'sam', 'iam');
 
-        test.ok(request.isSecure());
         test.equal(request.getPskId(), 'sam');
         test.equal(request.psk, 'iam');
 
@@ -153,7 +152,7 @@ module.exports["basics"] = testCase({
 
     "test getBaseUrl secure": function(test) {
 
-        var request = new Request('GET', null, {host: 'www.example.com'}, null, true);
+        var request = new Request('GET', null, {host: 'www.example.com'}, null, 'https');
 
         test.equal(request.getBaseUrl(), 'https://www.example.com');
 
