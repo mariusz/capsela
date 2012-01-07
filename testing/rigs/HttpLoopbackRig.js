@@ -28,6 +28,14 @@
 
 var http = require('http');
 var https = require('https');
+var os = require('os');
+
+var fifoDir = '/tmp/';
+
+// work around imagick bug
+if (os.type().indexOf('NT') < 0) {
+    fifoDir = '\\\\.\\pipe\\';
+}
 
 var orig = {
     httpRequest: http.request,
@@ -37,7 +45,8 @@ var orig = {
 };
 
 var host;
-var fifoDir = '\\\\.\\pipe\\';
+
+console.log()
 
 exports.setUp = function(hostname) {
     
