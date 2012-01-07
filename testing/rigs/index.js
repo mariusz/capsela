@@ -26,7 +26,7 @@
 
 "use strict";
 
-var modules = ['HttpClientRig', 'UnitBrowser'];
+var modules = ['HttpClientRig', 'UnitBrowser', 'HttpLoopbackRig'];
 
 function loadModule(name) {
     var module = require(__dirname + '/' + name);
