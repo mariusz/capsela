@@ -50,7 +50,7 @@ var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
 var mp = new MonkeyPatcher();
 var log;
 
-module.exports["cache control"] = testCase({
+module.exports["conditional get"] = testCase({
 
     "test validate mtime 304": function(test) {
 
@@ -705,6 +705,27 @@ module.exports["request processing"] = testCase({
                 Date: nowUTC,
                 Server: 'TestServer'
             });
+            test.done();
+        });
+
+        server.handleRequest(req, res);
+    },
+
+    "test handle non-response response": function(test) {
+
+        var server = new Server();
+
+        server.addStage({
+            service: function(request) {
+                return {};
+            }
+        });
+        
+        var req = new mocks.Request();
+        var res = new mocks.Response();
+
+        res.on('end', function() {
+            test.equal(500, res.statusCode);
             test.done();
         });
 
