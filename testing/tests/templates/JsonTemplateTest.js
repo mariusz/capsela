@@ -26,32 +26,74 @@
 
 "use strict";
 
-var testbench = require(__dirname + '/../TestBench');
+var testbench = require(__dirname + '/../../TestBench');
 var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
-var View = capsela.View;
+var JsonTemplate = capsela.templates.JsonTemplate;
+var mp = require('capsela-util').MonkeyPatcher;
 
-var capsela = require('capsela');
+var jsontemplate = require('../../../deps/json-template');
+
+var template =
+'<!--ENV\n\
+ { "title": "Goodbye, cruel world!", "complete": true }\n\
+ -->\n\
+xyz';
 
 module.exports["basics"] = testCase({
 
-    "test init w/o name throws": function(test) {
-
-        test.throws(function() {
-            var view = new View();
-        })
-        
-        test.done();
-    },
+    setUp: mp.setUp,
+    tearDown: mp.tearDown,
 
     "test init": function(test) {
 
-        var params = {};
-        var view = new View('my-view', params);
+        var t = new JsonTemplate(template);
 
-        test.equal(view.name, 'my-view');
-        test.deepEqual(view.params, params);
+        test.deepEqual(t.getEnv(), {title: "Goodbye, cruel world!", complete: true});
+        test.deepEqual(t.template, 'xyz');
+        test.done();
+    },
+
+    "test init w/o env": function(test) {
+
+        var t = new JsonTemplate('xyz');
+
+        test.equal(t.template, 'xyz');
+        test.deepEqual(t.getEnv(), {});
+        test.done();
+    },
+
+    "test init w/bad env": function(test) {
+
+        var template =
+        '<!--ENV\n\
+         title: "Well, hello!"\n\
+         -->\n\
+        xyz';
+
+        test.throws(function() {
+            var t = JsonTemplate(template);
+        });
+
+        test.done();
+    },
+
+    "test render": function(test) {
+
+        test.expect(3);
+
+        var t = new JsonTemplate('hi there');
+        var p = {};
+
+        mp.patch(jsontemplate, 'expand', function(source, params, options) {
+            test.equal(source, 'hi there');
+            test.equal(params, p);
+            test.deepEqual(options, {undefined_str: ''});
+        });
+
+        t.render(p);
+
         test.done();
     }
 });

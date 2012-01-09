@@ -35,7 +35,15 @@ module.exports["basics"] = testCase({
 
     "test init": function(test) {
 
-        var error = new capsela.Error('oh no!', 404, new Error('bummer'));
+        var error = new capsela.Error('oh no!');
+
+        test.equal(error.message, 'oh no!');
+        test.equal(error.code, 500);
+        test.equal(error.antecedent, undefined);
+        test.ok(error instanceof Error);
+        test.ok(error instanceof capsela.Error);
+
+        error = new capsela.Error('oh no!', 404, new Error('bummer'));
 
         test.equal(error.message, 'oh no!');
         test.equal(error.code, 404);

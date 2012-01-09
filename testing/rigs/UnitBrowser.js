@@ -60,8 +60,8 @@ var UnitBrowser = Browser.extend({
      * @param stage the stage under test
      */
     init: function(stage) {
-        this.compositor = new capsela.stages.Compositor(baseTemplate);
-        this.compositor.setNext(stage);
+        this.top = new capsela.stages.Renderer({}, baseTemplate);
+        this.top.setNext(stage);
         this._super();
     },
 
@@ -75,7 +75,7 @@ var UnitBrowser = Browser.extend({
      */
     clientDispatch: function(hostname, request) {
 
-        var t = this;
+        var self = this;
         
         // you know we need this
         request.headers.host = hostname;
@@ -87,10 +87,14 @@ var UnitBrowser = Browser.extend({
 
         // pass log messages up
         request.on('log', function(p, m) {
-            t.log(p, m);
+            self.log(p, m);
         });
         
-        return Q.when(this.compositor.service(request),
+        return Q.ref().then(
+            function() {
+                return self.top.service(request);
+            }
+        ).then(
             function(response) {
 
                 if (!response) {
@@ -101,7 +105,7 @@ var UnitBrowser = Browser.extend({
                 // this gives us easy direct access to the server response
                 // alternatively, we could create a real ClientResponse
                 // and stash the server response on it
-                
+
                 var bodyStream = new Pipe();
 
                 response.getBodyStream = function() {

@@ -30,7 +30,7 @@
 var modules = ['Server', 'Stage', 'Request', 'Response',
     'Redirect', 'FileResponse',
     'JsonResponse', 'BlobResponse', 'ViewResponse',
-    'ClientResponse', 'Link', 'ResolverRegistry',
+    'ClientResponse', 'ResolverRegistry',
      'Route', 'HttpClient', 'Browser', 'Cookie', 'Form',
     'Session', 'SessionStore', 'View', 'Error'];
 
@@ -45,6 +45,7 @@ function loadModule(name) {
 modules.forEach(loadModule);
 
 exports.stages = require(__dirname + '/lib/stages');
+exports.templates = require(__dirname + '/lib/templates');
 
 /**
  * Set up getters for the "rigs" and "probes" namespaces so the

@@ -39,6 +39,7 @@ var Renderer = capsela.stages.Renderer;
 var View = capsela.View;
 var ViewResponse = capsela.ViewResponse;
 var Q = require('qq');
+var JsonTemplate = capsela.templates.JsonTemplate;
 
 module.exports["resolving"] = testCase({
 
@@ -153,48 +154,6 @@ module.exports["basics"] = testCase({
     }
 });
 
-//    "test init w/o params": function(test) {
-//
-//        var view = new capsela.View(template);
-//
-//        // shouldn't render
-//        mp.patch(jsontemplate, 'expand',
-//            function(t, p, options) {
-//                test.ok(false);
-//            });
-//
-//        test.equal(view.render(), 'xyz');
-//        test.equal(view.getEnv().title, 'Goodbye, cruel world!');
-//        test.equal(view.getEnv().complete, true);
-//        test.done();
-//    },
-//
-//    "test init w/o title": function(test) {
-//
-//        var template = 'xyz';
-//        var view = new capsela.View(template);
-//
-//        test.equal(view.render(), 'xyz');
-//        test.equal(view.getTemplate(), 'xyz');
-//        test.deepEqual(view.getEnv(), {});
-//        test.done();
-//    },
-//
-//    "test init w/bad title": function(test) {
-//
-//        var template =
-//        '<!--JSON\n\
-//         title: "Well, hello!"\n\
-//         -->\n\
-//        xyz';
-//
-//        test.throws(function() {
-//            var view = new capsela.View(template);
-//        });
-//
-//        test.done();
-//    },
-
 module.exports["rendering"] = testCase({
     
 //    "test render with links": function(test) {
@@ -241,7 +200,7 @@ module.exports["rendering"] = testCase({
     "test render with no params": function(test) {
 
         var r = new Renderer({
-            myview: 'howdy'
+            myview: new JsonTemplate('howdy')
         });
 
         test.equal(r.render(new View('myview')), 'howdy');
@@ -251,7 +210,7 @@ module.exports["rendering"] = testCase({
     "test render and resolve": function(test) {
 
         var r = new Renderer({
-            myview: 'ref:static_file:logo'
+            myview: new JsonTemplate('ref:static_file:logo')
         });
 
         r.setResolverPool({
@@ -269,10 +228,10 @@ module.exports["rendering"] = testCase({
     "test render nested views": function(test) {
 
         var r = new Renderer({
-            base: '{y} {q}',
-            sub1: '{z} {b}',
-            sub2: '{a}',
-            sub3: '{r}'
+            base: new JsonTemplate('{y} {q}'),
+            sub1: new JsonTemplate('{z} {b}'),
+            sub2: new JsonTemplate('{a}'),
+            sub3: new JsonTemplate('{r}')
         });
         
         var v = new View('base', {
@@ -295,8 +254,8 @@ module.exports["rendering"] = testCase({
     "test render with layout no params": function(test) {
 
         var r = new Renderer({
-            myview: 'howdy'
-        }, '<doctype html>{view}');
+            myview: new JsonTemplate('howdy')
+        }, new JsonTemplate('<doctype html>{view}'));
 
         test.equal(r.render(new View('myview')), '<doctype html>howdy');
         test.done();
@@ -305,11 +264,11 @@ module.exports["rendering"] = testCase({
     "test render nested views with layout": function(test) {
 
         var r = new Renderer({
-            base: '{y} {q}',
-            sub1: '{z} {b}',
-            sub2: '{a}',
-            sub3: '{r}'
-        }, '<doctype html>{view}');
+            base: new JsonTemplate('{y} {q}'),
+            sub1: new JsonTemplate('{z} {b}'),
+            sub2: new JsonTemplate('{a}'),
+            sub3: new JsonTemplate('{r}')
+        }, new JsonTemplate('<doctype html>{view}'));
 
         var v = new View('base', {
             x: 42,
@@ -331,8 +290,8 @@ module.exports["rendering"] = testCase({
     "test render missing view falls back to error": function(test) {
 
         var r = new Renderer({
-            error: 'oops! {error.message}'
-        }, '<doctype html>{view}');
+            error: new JsonTemplate('oops! {error.message}')
+        }, new JsonTemplate('<doctype html>{view}'));
 
         var v = new View('base');
 
