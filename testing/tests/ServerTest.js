@@ -63,13 +63,12 @@ module.exports["conditional get"] = testCase({
 
         var server = new Server();
 
-        server.setNext({
-            service: function(request) {
+        server.setNext(
+            function(request) {
                 var r = new Response();
                 r.enableCaching(mtime);
                 return r;
-            }
-        });
+            });
 
         server.handleRequest(req, res);
         
@@ -91,13 +90,12 @@ module.exports["conditional get"] = testCase({
 
         var server = new Server();
 
-        server.setNext({
-            service: function(request) {
+        server.setNext(
+            function(request) {
                 var r = new Response();
                 r.enableCaching(new Date(73248)); // needs to be > in second resolution
                 return r;
-            }
-        });
+            });
 
         server.handleRequest(req, res);
 
@@ -134,12 +132,11 @@ module.exports["construct/start"] = testCase({
 
         var server = new Server();
 
-        server.setNext({
-            service: function(request) {
+        server.setNext(
+            function(request) {
                 now += 88;
                 return new Response(202);
-            }
-        });
+            });
 
         server.on('log', function(priority, message) {
 
@@ -474,14 +471,13 @@ module.exports["form processing"] = testCase({
 
         var server = new Server(80);
 
-        server.setNext({
-            service: function(request) {
+        server.setNext(
+            function(request) {
                 return Form.createFromRequest(request).then(function(form) {
                     test.deepEqual(form.getFields(), expected);
                     test.equal(form.getFiles().adminImage.size, 0);
                 });
-            }
-        });
+            });
 
         var req = new mocks.Request('POST', '/yomama');
 
@@ -525,8 +521,8 @@ module.exports["form processing"] = testCase({
 
         var server = new Server(80);
 
-        server.setNext({
-            service: function(request) {
+        server.setNext(
+            function(request) {
 
                 var d = Q.defer(); // need to wait
 
@@ -555,8 +551,7 @@ module.exports["form processing"] = testCase({
                 });
 
                 return d.promise;
-            }
-        });
+            });
 
         var req = new mocks.Request('POST', '/yomama');
 
@@ -619,11 +614,10 @@ module.exports["request processing"] = testCase({
 
         var server = new Server(80);
 
-        server.addStage({
-            service: function(request) {
+        server.addStage(
+            function(request) {
                 throw new Error("fool! you've killed us all!");
-            }
-        });
+            });
 
         var req = new mocks.Request();
         var res = new mocks.Response();
@@ -648,14 +642,13 @@ module.exports["request processing"] = testCase({
 
         var server = new Server(80);
 
-        server.addStage({
-            service: function(request) {
+        server.addStage(
+            function(request) {
                 return Q.ref().then(
                     function() {
                         throw new Error("fool! you've killed us all!");
                     });
-            }
-        });
+            });
 
         var req = new mocks.Request();
         var res = new mocks.Response();
@@ -689,12 +682,11 @@ module.exports["request processing"] = testCase({
 
         var server = new Server(80, {name: 'TestServer'});
 
-        server.addStage({
-            service: function(request) {
+        server.addStage(
+            function(request) {
                 test.ok(request instanceof Request);
                 return new Response(410);
-            }
-        });
+            });
 
         var req = new mocks.Request();
         var res = new mocks.Response();
@@ -715,11 +707,9 @@ module.exports["request processing"] = testCase({
 
         var server = new Server();
 
-        server.addStage({
-            service: function(request) {
+        server.addStage(function(request) {
                 return {};
-            }
-        });
+            });
         
         var req = new mocks.Request();
         var res = new mocks.Response();

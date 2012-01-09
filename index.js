@@ -28,9 +28,9 @@
 /*global require: false, __dirname: false, global: false, process: false, exports: true, Buffer: false, module: false, setInterval: true */
 
 var modules = ['Server', 'Stage', 'Request', 'Response',
-    'Redirect', 'ErrorResponse', 'FileResponse',
+    'Redirect', 'FileResponse',
     'JsonResponse', 'BlobResponse', 'ViewResponse',
-    'ClientResponse', 'Link', 'Reference', 'Resolver',
+    'ClientResponse', 'Link', 'ResolverRegistry',
      'Route', 'HttpClient', 'Browser', 'Cookie', 'Form',
     'Session', 'SessionStore', 'View', 'Error'];
 

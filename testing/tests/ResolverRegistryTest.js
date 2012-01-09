@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * Author: Seth Purcell
- * Date: 11/8/11
+ * Date: 12/22/11
  */
 
 "use strict";
@@ -29,29 +29,57 @@
 var testbench = require(__dirname + '/../TestBench');
 var testCase = require('nodeunit').testCase;
 
-var ErrorResponse = require('capsela').ErrorResponse;
+var capsela = require('capsela');
 
 module.exports["basics"] = testCase({
 
-    "test init": function(test) {
+    "test register/resolve": function(test) {
 
-        var error = new Error("monkeys!");
+        var reg = new capsela.ResolverRegistry();
 
-        var er = new ErrorResponse(error);
+        test.equal(reg.resolve('base_url'), undefined);
 
-        test.equal(er.statusCode, 500);
-        test.equal(er.error, error);
-        test.equal(er.view.getTemplate(), ErrorResponse.TEMPLATE);
-        test.deepEqual(er.view.getParams(), {
-            error: error,
-            code: 500
+        reg.register('action_link', {
+            resolve: function(nid, nss) {
+                return '/aloha';
+            }
+        });
+        
+        test.equal(reg.resolve('base_url'), undefined);
+
+        reg.register('base_url', {
+            resolve: function(nid, nss) {
+                return 'http://www.example.com';
+            }
         });
 
-        er = new ErrorResponse(error, 404);
+        test.equal(reg.resolve('base_url'), 'http://www.example.com');
+        test.equal(reg.resolve('action_link'), '/aloha');
 
-        test.equal(er.statusCode, 404);
-        test.equal(er.error, error);
-        
+        test.done();
+    },
+    
+    "test register bare function": function(test) {
+
+        var reg = new capsela.ResolverRegistry();
+
+        test.equal(reg.resolve('base_url'), undefined);
+
+        reg.register('action_link',
+            function(nid, nss) {
+                return '/aloha';
+            });
+
+        test.equal(reg.resolve('base_url'), undefined);
+
+        reg.register('base_url',
+            function(nid, nss) {
+                return 'http://www.example.com';
+            });
+
+        test.equal(reg.resolve('base_url'), 'http://www.example.com');
+        test.equal(reg.resolve('action_link'), '/aloha');
+
         test.done();
     }
 });

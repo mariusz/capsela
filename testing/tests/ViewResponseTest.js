@@ -43,7 +43,7 @@ module.exports["basics"] = testCase({
         cb();
     },
 
-    "test init": function(test) {
+    "test init/sendBody": function(test) {
         
         var view = new View('xyz');
         var response = new ViewResponse(view, 701);
@@ -53,11 +53,15 @@ module.exports["basics"] = testCase({
         test.equal(response.getContentType(), 'text/html; charset=utf-8');
         test.equal(response.statusCode, 701);
 
-        view.render = function() {
-            return 'result';
-        };
+        // test fluent interface
+        test.equal(response.setRenderer({
+            render: function(v) {
+                test.equal(v, view);
+                return 'result';
+            }
+        }), response);
 
-        pipe.getData().then(
+        pipe.getData('utf8').then(
             function(data) {
                 test.equal(data, 'result');
                 test.done();

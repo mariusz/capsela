@@ -43,7 +43,7 @@ module.exports = testCase({
     "test passthrough": function(test) {
 
         var request = new Request();
-        var handler = new ErrorHandler('the-template');
+        var handler = new ErrorHandler();
         var response = new Response();
 
         handler.setNext(
@@ -61,13 +61,13 @@ module.exports = testCase({
     "test catch empty response": function(test) {
 
         var request = new Request();
-        var handler = new ErrorHandler('the-template');
+        var handler = new ErrorHandler();
         
         Q.when(handler.service(request),
             function(response) {
 
                 test.equal(response.statusCode, 404);
-                test.equal(response.view.getTemplate(), 'the-template');
+                test.equal(response.view.name, 'error');
                 test.done();
             }).end();
     },
@@ -75,7 +75,7 @@ module.exports = testCase({
     "test catch empty promise": function(test) {
 
         var request = new Request();
-        var handler = new ErrorHandler('the-template');
+        var handler = new ErrorHandler();
 
         handler.setNext(
             function(request) {
@@ -86,7 +86,7 @@ module.exports = testCase({
             function(response) {
 
                 test.equal(response.statusCode, 404);
-                test.equal(response.view.getTemplate(), 'the-template');
+                test.equal(response.view.name, 'error');
                 test.done();
             }).end();
     },
@@ -94,7 +94,7 @@ module.exports = testCase({
     "test catch thrown error": function(test) {
 
         var request = new Request();
-        var handler = new ErrorHandler('the-template');
+        var handler = new ErrorHandler();
         var error = new Error("file not found");
 
         error.code = 404;
@@ -106,8 +106,8 @@ module.exports = testCase({
 
         Q.when(handler.service(request),
             function(response) {
-                test.equal(response.view.getTemplate(), 'the-template');
-                test.deepEqual(response.view.getParams(), {
+                test.equal(response.view.name, 'error');
+                test.deepEqual(response.view.params, {
                     error: error
                 });
                 test.equal(response.statusCode, 404);

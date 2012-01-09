@@ -29,7 +29,8 @@
 var testbench = require(__dirname + '/../TestBench');
 var testCase = require('nodeunit').testCase;
 
-var Stage = require('capsela').Stage;
+var capsela = require('capsela');
+var Stage = capsela.Stage;
 var Q = require('qq');
 
 module.exports["parsing"] = testCase({
@@ -74,19 +75,24 @@ module.exports["parsing"] = testCase({
     
     "test setNext/pass": function(test) {
 
+        test.expect(5);
+
         var stage = new Stage();
 
         var mockRequest = {};
         var mockResponse = {};
         
-        var mockStage = {
-            service: function(request) {
+        var subStage = new Stage(
+            function(request) {
                 test.equal(request, mockRequest);
                 return mockResponse;
-            }
+            });
+
+        subStage.setResolverPool = function() {
+            test.ok(true);
         };
 
-        test.equal(stage.setNext(mockStage), mockStage);
+        test.equal(stage.setNext(subStage), subStage);
         test.equal(stage.pass(mockRequest), mockResponse);
 
         // test adding a raw function
@@ -139,6 +145,45 @@ module.exports["parsing"] = testCase({
         test.equal(stage2.next, stage3);
         test.equal(stage3.next, stage4);
         
+        test.done();
+    },
+
+    "test setResolverPool": function(test) {
+
+        var stage1 = new Stage();
+        var stage2 = new Stage();
+
+        var mock = {};
+
+        stage1.setResolverPool(mock);
+        stage1.setNext(stage2);
+
+        test.equal(stage2.resolverPool, mock);
+
+        test.done();
+    },
+
+    "test addResolver": function(test) {
+
+        test.expect(3);
+
+        var stage1 = new Stage();
+        var stage2 = new Stage();
+
+        var mock = {};
+        var pool = {
+            register: function(type, resolver) {
+                test.equal(type, 'base_url');
+                test.equal(resolver, mock);
+            }
+        }
+
+        stage1.setResolverPool(pool);
+        stage1.setNext(stage2);
+
+        // add resolver to stage2...
+        test.equal(stage2.addResolver('base_url', mock), stage2);
+
         test.done();
     }
 });

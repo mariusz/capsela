@@ -47,11 +47,11 @@ module.exports["basics"] = testCase({
 
         test.expect(6);
 
-        var d = new Dispatcher('butterball');
+        var d = new Dispatcher();
         test.deepEqual(d.getConfig(), {});
 
         var config = {};
-        d = new Dispatcher('butterball', testbench.fixturesDir + '/controllers', config);
+        d = new Dispatcher(testbench.fixturesDir + '/controllers', config);
 
         test.equal(d.getConfig(), config);
         
@@ -70,7 +70,7 @@ module.exports["basics"] = testCase({
 
     "test isReady": function(test) {
 
-        var d = new Dispatcher('butterball');
+        var d = new Dispatcher();
 
         d.ready = 75;
 
@@ -142,9 +142,27 @@ module.exports["basics"] = testCase({
     }
 });
 
-module.exports["link assembly"] = testCase({
+module.exports["resolving"] = testCase({
 
-    "test getLink": function(test) {
+    "test setResolverPool registers resolver": function(test) {
+
+        test.expect(2);
+
+        var d = new Dispatcher();
+
+        var mock = {
+            register: function(type, resolver) {
+                test.equal(type, 'action_link');
+                test.equal(resolver, d);
+            }
+        };
+
+        d.setResolverPool(mock);
+        
+        test.done();
+    },
+
+    "test resolve": function(test) {
         
         var d = new Dispatcher();
 
@@ -153,56 +171,36 @@ module.exports["link assembly"] = testCase({
         d.setUp(testbench.fixturesDir + '/controllers').then(
             function(result) {
 
-                test.equal(d.getLink('default', 'default'), '/');
-                test.equal(d.getLink('default', 'default', {'answer': 42}), '/answer/42/');
-                test.equal(d.getLink('default', 'default',
-                    {'answer': 42, hoop: 'a', joop: undefined}), '/answer/42/hoop/a/joop/');
-                test.equal(d.getLink('default', 'default',
-                    {'answer': 42, hoop: 'a', joop: undefined}, true), '/answer/42/hoop/a/joop');
+                test.equal(d.resolve('action_link', '/default/default'), '/');
+                test.equal(d.resolve('action_link', '/default/default/'), '/');
 
-                test.equal(d.getLink('default', 'edit'), '/edit/');
-                test.equal(d.getLink('default', 'edit', {'answer': 42}), '/edit/answer/42/');
-                test.equal(d.getLink('default', 'edit',
-                    {'answer': 42, hoop: 'a', joop: undefined}), '/edit/answer/42/hoop/a/joop/');
-                test.equal(d.getLink('default', 'edit',
-                    {'answer': 42, hoop: 'a', joop: undefined}, true), '/edit/answer/42/hoop/a/joop');
+                // test param and trailing slash
+                test.equal(d.resolve('action_link', '/default/default/answer=42'), '/answer/42');
+                test.equal(d.resolve('action_link', '/default/default/answer=42/'), '/answer/42/');
+                
+                test.equal(d.resolve('action_link', '/default/default/answer=42/hoop=a/joop/'),
+                    '/answer/42/hoop/a/joop/');
+                test.equal(d.resolve('action_link', '/default/default/answer=42/hoop=a/joop'),
+                    '/answer/42/hoop/a/joop');
+                
+                test.equal(d.resolve('action_link', '/default/edit/'), '/edit/');
+                test.equal(d.resolve('action_link', '/default/edit/answer=42/'), '/edit/answer/42/');
+                test.equal(d.resolve('action_link', '/default/edit/answer=42/hoop=a/joop/'), '/edit/answer/42/hoop/a/joop/');
+                test.equal(d.resolve('action_link', '/default/edit/answer=42/hoop=a/joop'), '/edit/answer/42/hoop/a/joop');
 
-                test.equal(d.getLink('user', 'default'), '/user/');
-                test.equal(d.getLink('user', 'default', {'answer': 42}), '/user/answer/42/');
-                test.equal(d.getLink('user', 'default',
-                    {'answer': 42, hoop: 'a', joop: undefined}), '/user/answer/42/hoop/a/joop/');
-                test.equal(d.getLink('user', 'default',
-                    {'answer': 42, hoop: 'a', joop: undefined}, true), '/user/answer/42/hoop/a/joop');
-
-                test.equal(d.getLink('user', 'edit'), '/user/edit/');
-                test.equal(d.getLink('user', 'edit', {'answer': 42}), '/user/edit/answer/42/');
-                test.equal(d.getLink('user', 'edit',
-                    {'answer': 42, hoop: 'a', joop: undefined}), '/user/edit/answer/42/hoop/a/joop/');
-                test.equal(d.getLink('user', 'edit',
-                    {'answer': 42, hoop: 'a', joop: undefined}, true), '/user/edit/answer/42/hoop/a/joop');
+                test.equal(d.resolve('action_link', 'user/default/'), '/user/');
+                test.equal(d.resolve('action_link', 'user/default/answer=42/'), '/user/answer/42/');
+                test.equal(d.resolve('action_link', 'user/default/answer=42/hoop=a/joop/'), '/user/answer/42/hoop/a/joop/');
+                test.equal(d.resolve('action_link', 'user/default/answer=42/hoop=a/joop'), '/user/answer/42/hoop/a/joop');
+                
+                test.equal(d.resolve('action_link', 'user/edit/'), '/user/edit/');
+                test.equal(d.resolve('action_link', 'user/edit/answer=42/'), '/user/edit/answer/42/');
+                test.equal(d.resolve('action_link', 'user/edit/answer=42/hoop=a/joop/'), '/user/edit/answer/42/hoop/a/joop/');
+                test.equal(d.resolve('action_link', 'user/edit/answer=42/hoop=a/joop'), '/user/edit/answer/42/hoop/a/joop');
 
                 test.done();
             }
         ).end();
-    },
-
-    "test getUrl": function(test) {
-
-        var d = new Dispatcher('https://www.shareakeet.com');
-        var params = {};
-
-        d.getLink = function(c, a, p, leaf) {
-            test.equal(c, 'controller');
-            test.equal(a, 'action');
-            test.equal(p, params);
-            test.equal(leaf, true);
-            return '/the-link';
-        };
-
-        test.equal(d.getUrl('controller', 'action', params, true),
-            'https://www.shareakeet.com/the-link');
-
-        test.done();
     }
 });
 
@@ -387,30 +385,6 @@ module.exports["dispatching"] = testCase({
             function(result) {
 
                 test.equal(result, 'fell through');
-                test.done();
-            }
-        ).end();
-    }
-});
-
-module.exports["view handling"] = testCase({
-
-    "test injects into view": function(test) {
-        
-        var d = new Dispatcher();
-        var view = new View('xyz');
-
-        d.addController({
-            defaultAction: function(request) {
-                return Q.ref(view);
-            }
-        }, 'default');
-
-        Q.when(d.service(new capsela.Request()),
-            function(result) {
-
-                test.equal(result, view);
-                test.equal(result.urlFactory, d);
                 test.done();
             }
         ).end();

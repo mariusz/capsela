@@ -32,6 +32,8 @@ var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
 var jsontemplate = require('../../deps/json-template');
 var StreamUtil = require('capsela-util').StreamUtil;
 var Pipe = require('capsela-util').Pipe;
+var capsela = require('capsela');
+var View = capsela.View;
 var mp = new MonkeyPatcher();
 
 var capsela = require('capsela');
@@ -49,128 +51,22 @@ module.exports["basics"] = testCase({
         cb();
     },
 
-    "test init": function(test) {
-
-        var params = {};
-        var view = new capsela.View(template, params, 'xx');
-
-        mp.patch(jsontemplate, 'expand',
-            function(t, p, options) {
-                test.equal(t, 'xyz');
-                test.deepEqual(p, params);
-                test.deepEqual(options, {undefined_str: ''});
-                return 'result';
-            });
-
-        test.equal(view.render(), 'result');
-        test.equal(view.urlFactory, 'xx');
-        test.equal(view.getTemplate(), 'xyz');
-        test.deepEqual(view.getParams(), params);
-        test.equal(view.getEnv().title, 'Goodbye, cruel world!');
-        test.equal(view.getEnv().complete, true);
-        test.done();
-    },
-
-    "test init w/o params": function(test) {
-
-        var view = new capsela.View(template);
-
-        // shouldn't render
-        mp.patch(jsontemplate, 'expand',
-            function(t, p, options) {
-                test.ok(false);
-            });
-
-        test.equal(view.render(), 'xyz');
-        test.equal(view.getEnv().title, 'Goodbye, cruel world!');
-        test.equal(view.getEnv().complete, true);
-        test.done();
-    },
-
-    "test init w/o title": function(test) {
-
-        var template = 'xyz';
-        var view = new capsela.View(template);
-
-        test.equal(view.render(), 'xyz');
-        test.equal(view.getTemplate(), 'xyz');
-        test.deepEqual(view.getEnv(), {});
-        test.done();
-    },
-
-    "test init w/bad title": function(test) {
-
-        var template =
-        '<!--JSON\n\
-         title: "Well, hello!"\n\
-         -->\n\
-        xyz';
+    "test init w/o name throws": function(test) {
 
         test.throws(function() {
-            var view = new capsela.View(template);
-        });
+            var view = new View();
+        })
         
         test.done();
     },
 
-    "test render with links": function(test) {
+    "test init": function(test) {
 
-        var template = 'link1: {link1}, link2: {link2}';
-        var params = {
-            link1: new capsela.Link('signup', 'default', {}),
-            link2: new capsela.Link('message', 'view', {key: 72, who: 'you'}, true)
-        };
+        var params = {};
+        var view = new View('my-view', params);
 
-        var dispatcher = new capsela.stages.Dispatcher('root');
-
-        dispatcher.addController({}, 'signup');
-        dispatcher.addController({}, 'message');
-
-        var view = new capsela.View(template, params, dispatcher);
-
-        test.equal(view.render(),
-            'link1: root/signup/, link2: root/message/view/key/72/who/you');
-        test.done();
-    },
-
-    "test render resolves references": function(test) {
-
-        var r = new capsela.Reference();
-
-        var v = new capsela.View('<img src="{imageSource}" />', {
-            x: 42,
-            imageSource: r
-        });
-
-        var resolver = new capsela.Resolver();
-
-        resolver.resolve = function(ref) {
-            test.equal(ref, r);
-            return 'background.png';
-        }
-
-        test.deepEqual(v.render(resolver), '<img src="background.png" />');
-
-        test.done();
-    },
-
-    "test render nested views": function(test) {
-
-        var v = new capsela.View('{y} {q}', {
-            x: 42,
-            y: new capsela.View('{z} {b}', {
-                z: new capsela.View('{a}', {
-                    a: 34
-                }),
-                b: 'hi'
-            }),
-            q: new capsela.View('{r}', {
-                r: 'there'
-            })
-        });
-
-        test.deepEqual(v.render(), '34 hi there');
-
+        test.equal(view.name, 'my-view');
+        test.deepEqual(view.params, params);
         test.done();
     }
 });

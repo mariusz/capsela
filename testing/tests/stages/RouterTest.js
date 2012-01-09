@@ -182,12 +182,15 @@ module.exports = testCase({
                     return new Response();
                 });
 
-        Q.when(router.service(request),
-            function(response) {
-                test.equal(request.router, router);
-                test.equal(response.statusCode, 405);
-                test.done();
-            });
+
+        try {
+            router.service(request);
+        }
+        catch (err) {
+            test.equal(request.router, router);
+            test.equal(err.code, 405);
+            test.done();
+        }
     },
 
     "test match root": function(test) {
