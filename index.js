@@ -32,7 +32,7 @@ var modules = ['Server', 'Stage', 'Request', 'Response',
     'JsonResponse', 'BlobResponse', 'ViewResponse',
     'ClientResponse', 'ResolverRegistry',
      'Route', 'HttpClient', 'Browser', 'Cookie', 'Form',
-    'Session', 'SessionStore', 'View', 'Error'];
+    'Session', 'SessionStore', 'View', 'ViewRenderer', 'Error'];
 
 function loadModule(name) {
     var module = require(__dirname + '/lib/' + name);

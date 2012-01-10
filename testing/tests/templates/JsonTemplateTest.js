@@ -84,11 +84,56 @@ module.exports["basics"] = testCase({
         test.expect(3);
 
         var t = new JsonTemplate('hi there');
-        var p = {};
 
         mp.patch(jsontemplate, 'expand', function(source, params, options) {
             test.equal(source, 'hi there');
-            test.equal(params, p);
+            test.deepEqual(params, {name: 'Wallace, David Foster'});
+            test.deepEqual(options, {undefined_str: ''});
+        });
+
+        t.render({name: 'Wallace, David Foster'});
+
+        test.done();
+    },
+
+    "test render w/o params": function(test) {
+
+        test.expect(3);
+
+        var t = new JsonTemplate('hi there');
+
+        mp.patch(jsontemplate, 'expand', function(source, params, options) {
+            test.equal(source, 'hi there');
+            test.deepEqual(params, {});
+            test.deepEqual(options, {undefined_str: ''});
+        });
+
+        t.render();
+
+        test.done();
+    },
+
+    "test render w/env vars": function(test) {
+
+        test.expect(3);
+
+        var t = new JsonTemplate(template);
+        var p = {
+            title: 'A Close Shave',
+            name: 'Wallace',
+            dog: 'Gromit',
+            sheep: 'Shaun'
+        };
+
+        mp.patch(jsontemplate, 'expand', function(source, params, options) {
+            test.equal(source, 'xyz');
+            test.deepEqual(params, {
+                title: "A Close Shave",
+                name: 'Wallace',
+                dog: 'Gromit',
+                sheep: 'Shaun',
+                complete: true
+            });
             test.deepEqual(options, {undefined_str: ''});
         });
 
