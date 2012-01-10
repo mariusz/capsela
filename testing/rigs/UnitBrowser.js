@@ -35,7 +35,6 @@ var HttpClient = capsela.HttpClient;
 var Request = capsela.Request;
 var ClientResponse = capsela.ClientResponse;
 var Q = require('qq');
-var StreamUtil = require('capsela-util').StreamUtil;
 var Pipe = require('capsela-util').Pipe;
 var Log = require('capsela-util').Log;
 var Cookie = capsela.Cookie;
@@ -60,7 +59,7 @@ var UnitBrowser = Browser.extend({
      * @param stage the stage under test
      */
     init: function(stage) {
-        this.top = new capsela.stages.Renderer({}, baseTemplate);
+        this.top = new capsela.stages.ViewRenderer({}, baseTemplate);
         this.top.setNext(stage);
         this._super();
     },
