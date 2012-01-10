@@ -45,7 +45,7 @@ function loadModule(name) {
 modules.forEach(loadModule);
 
 exports.stages = require(__dirname + '/lib/stages');
-exports.templates = require(__dirname + '/lib/templates');
+exports.views = require(__dirname + '/lib/views');
 
 /**
  * Set up getters for the "rigs" and "probes" namespaces so the

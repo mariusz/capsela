@@ -67,7 +67,7 @@ module.exports = testCase({
             function(response) {
 
                 test.equal(response.statusCode, 404);
-                test.equal(response.view.name, 'error');
+                test.equal(response.view, 'error');
                 test.done();
             }).end();
     },
@@ -86,7 +86,7 @@ module.exports = testCase({
             function(response) {
 
                 test.equal(response.statusCode, 404);
-                test.equal(response.view.name, 'error');
+                test.equal(response.view, 'error');
                 test.done();
             }).end();
     },
@@ -106,8 +106,8 @@ module.exports = testCase({
 
         Q.when(handler.service(request),
             function(response) {
-                test.equal(response.view.name, 'error');
-                test.deepEqual(response.view.params, {
+                test.equal(response.view, 'error');
+                test.deepEqual(response.model, {
                     error: error
                 });
                 test.equal(response.statusCode, 404);

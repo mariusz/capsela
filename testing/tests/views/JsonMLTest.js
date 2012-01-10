@@ -30,10 +30,8 @@ var testbench = require(__dirname + '/../../TestBench');
 var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
-var JsonMLTemplate = capsela.templates.JsonMLTemplate;
+var JsonML = capsela.views.JsonML;
 var mp = require('capsela-util').MonkeyPatcher;
-
-var jsontemplate = require('../../../deps/json-template');
 
 var template =
 '<!--ENV\n\
@@ -49,7 +47,7 @@ module.exports["basics"] = testCase({
     "test init": function(test) {
 
         var obj = [];
-        var t = new JsonMLTemplate(obj);
+        var t = new JsonML(obj);
 
         test.deepEqual(t.template, obj);
         test.done();
@@ -58,31 +56,31 @@ module.exports["basics"] = testCase({
     "test rendering": function(test) {
 
         var obj = 'hi';
-        test.equal(JsonMLTemplate.renderJsonMl(obj), 'hi');
+        test.equal(JsonML.renderJsonMl(obj), 'hi');
 
         // tag only
         obj = ['html'];
-        test.equal(JsonMLTemplate.renderJsonMl(obj), '<html></html>');
+        test.equal(JsonML.renderJsonMl(obj), '<html></html>');
 
         // with multiple text children
         obj = ['p', 'As Gregor Samsa', 'awoke one morning','from uneasy dreams','he found himself'];
-        test.equal(JsonMLTemplate.renderJsonMl(obj), '<p>As Gregor Samsa\nawoke one morning\nfrom uneasy dreams\nhe found himself\n</p>');
+        test.equal(JsonML.renderJsonMl(obj), '<p>As Gregor Samsa\nawoke one morning\nfrom uneasy dreams\nhe found himself\n</p>');
 
         // tag with attributes
         obj = ['body', {style: 'height: 100%; background: #fff;', 'class': 'ie8'}];
-        test.equal(JsonMLTemplate.renderJsonMl(obj), '<body style="height: 100%; background: #fff;" class="ie8"></body>');
+        test.equal(JsonML.renderJsonMl(obj), '<body style="height: 100%; background: #fff;" class="ie8"></body>');
 
         // empty tags
         obj = ['body', ['img', {src: 'image1.png'}], ['br'], ['img', {src: 'image2.jpg'}]];
-        test.equal(JsonMLTemplate.renderJsonMl(obj), '<body><img src="image1.png"/>\n<br/>\n<img src="image2.jpg"/>\n</body>');
+        test.equal(JsonML.renderJsonMl(obj), '<body><img src="image1.png"/>\n<br/>\n<img src="image2.jpg"/>\n</body>');
 
         // uppercase
         obj = ['BODY', ['IMG', {src: 'image1.png'}], ['BR'], ['IMG', {src: 'image2.jpg'}]];
-        test.equal(JsonMLTemplate.renderJsonMl(obj), '<BODY><IMG src="image1.png"/>\n<BR/>\n<IMG src="image2.jpg"/>\n</BODY>');
+        test.equal(JsonML.renderJsonMl(obj), '<BODY><IMG src="image1.png"/>\n<BR/>\n<IMG src="image2.jpg"/>\n</BODY>');
 
         // trailing strings
         obj = ['div', ['p', 'hi', 'there'], '   '];
-        test.equal(JsonMLTemplate.renderJsonMl(obj), '<div><p>hi\nthere\n</p>\n   \n</div>');
+        test.equal(JsonML.renderJsonMl(obj), '<div><p>hi\nthere\n</p>\n   \n</div>');
 
         test.done();
     }

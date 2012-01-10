@@ -35,17 +35,17 @@ var capsela = require('capsela');
 var Response = capsela.Response;
 var Request = capsela.Request;
 var Stage = capsela.Stage;
-var Renderer = capsela.stages.Renderer;
+var ViewRenderer = capsela.stages.ViewRenderer;
 var View = capsela.View;
 var ViewResponse = capsela.ViewResponse;
-var JsonTemplate = capsela.templates.JsonTemplate;
+var JsonTemplate = capsela.views.JsonTemplate;
 var Q = require('qq');
 
 module.exports["basics"] = testCase({
 
     "test init/isReady": function(test) {
 
-        var r = new Renderer();
+        var r = new ViewRenderer();
 
         r.isReady().then(
             function() {
@@ -58,7 +58,7 @@ module.exports["basics"] = testCase({
 
         test.expect(2);
         
-        var r = new Renderer();
+        var r = new ViewRenderer();
 
         var resolver = {};
         r.vr = {
@@ -76,7 +76,7 @@ module.exports["basics"] = testCase({
     "test passthrough": function(test) {
 
         var request = new Request();
-        var handler = new Renderer();
+        var handler = new ViewRenderer();
         var response = new Response();
 
         handler.setNext(new Stage(
@@ -109,18 +109,16 @@ module.exports["basics"] = testCase({
 //            });
 //    },
 
-    "test intercept view": function(test) {
+    "test passes viewResponse w/view": function(test) {
 
         var request = new Request();
-        var r = new Renderer();
-
-        r.addTemplate("my-view", "hello world!");
+        var r = new ViewRenderer();
         
         var view = new View('my-view');
 
         r.setNext(new Stage(
             function() {
-                return view;
+                return new ViewResponse(view);
             }));
 
         Q.when(r.service(request),
@@ -128,26 +126,28 @@ module.exports["basics"] = testCase({
                 test.equal(response.statusCode, 200);
                 test.ok(response instanceof ViewResponse);
                 test.equal(response.view, view);
-                test.equal(response.renderer, r);
                 test.done();
             }).end();
     },
 
-    "test intercept viewResponse": function(test) {
+    "test intercept viewResponse w/o view": function(test) {
 
         var request = new Request();
-        var r = new Renderer();
-        var vr = new ViewResponse();
+        var r = new ViewRenderer();
+        var res = new ViewResponse('my-view');
+        var mockView = {};
+
+        r.addView('my-view', mockView);
 
         r.setNext(new Stage(
             function() {
-                return vr;
+                return res;
             }));
 
         Q.when(r.service(request),
             function(response) {
                 test.equal(response.statusCode, 200);
-                test.equal(response, vr);
+                test.equal(response, res);
                 test.equal(response.renderer, r);
                 test.done();
             }).end();
@@ -158,10 +158,11 @@ module.exports["rendering"] = testCase({
     
     "test render and resolve": function(test) {
 
-        var r = new Renderer()
+        var r = new ViewRenderer()
+        var params = {val: 'ref:req_info:client_ip'};
         
-        r.addTemplate('myview', new JsonTemplate('Client IP = ref:req_info:client_ip'));
-        r.addTemplate('layout', new JsonTemplate('<doctype html>{view}'));
+        r.addView('myview', new JsonTemplate('Client IP = {val}'));
+        r.addView('layout', new JsonTemplate('<doctype html>{content}'));
 
         r.setResolverPool({
             resolve: function(type, ref) {
@@ -171,65 +172,61 @@ module.exports["rendering"] = testCase({
             }
         })
 
-        test.equal(r.render(new View('myview')), '<doctype html>Client IP = 0.0.0.1');
+        test.equal(r.render('myview', params), '<doctype html>Client IP = 0.0.0.1');
         test.done();
     },
 
-    "test render nested views with layout": function(test) {
-
-        var r = new Renderer();
-
-        r.vr.addTemplates({
-            base: new JsonTemplate('{y} {q}'),
-            sub1: new JsonTemplate('{z} {b}'),
-            sub2: new JsonTemplate('{a}'),
-            sub3: new JsonTemplate('{r}'),
-            layout: new JsonTemplate('<doctype html>{view}')
-        });
-
-        var v = new View('base', {
-            x: 42,
-            y: new View('sub1', {
-                z: new View('sub2', {
-                    a: 34
-                }),
-                b: 'hi'
-            }),
-            q: new View('sub3', {
-                r: 'there'
-            })
-        });
-
-        test.equal(r.render(v), '<doctype html>34 hi there');
-        test.done();
-    },
+//    "test render nested views with layout": function(test) {
+//
+//        var r = new Renderer();
+//
+//        r.vr.addViews({
+//            base: new JsonTemplate('{y} {q}'),
+//            sub1: new JsonTemplate('{z} {b}'),
+//            sub2: new JsonTemplate('{a}'),
+//            sub3: new JsonTemplate('{r}'),
+//            layout: new JsonTemplate('<doctype html>{content}')
+//        });
+//
+//        var v = new View('base', {
+//            x: 42,
+//            y: new View('sub1', {
+//                z: new View('sub2', {
+//                    a: 34
+//                }),
+//                b: 'hi'
+//            }),
+//            q: new View('sub3', {
+//                r: 'there'
+//            })
+//        });
+//
+//        test.equal(r.render(v), '<doctype html>34 hi there');
+//        test.done();
+//    },
 
     "test render missing view falls back to error": function(test) {
 
-        var r = new Renderer();
+        var r = new ViewRenderer();
 
-        r.addTemplate('error', new JsonTemplate('ERROR {error.code}: {error.message}'));
-        r.addTemplate('layout', new JsonTemplate('<doctype html>{view}'));
+        r.addView('error', new JsonTemplate('ERROR {error.code}: {error.message}'));
+        r.addView('layout', new JsonTemplate('<doctype html>{content}'));
 
-        var v = new View('base');
-
-        test.equal(r.render(v), '<doctype html>ERROR 500: no template for view "base"');
+        test.equal(r.render('base'), '<doctype html>ERROR 500: view "base" not found');
         test.done();
     },
 
     "test render missing view without error view": function(test) {
 
-        var r = new Renderer();
+        var r = new ViewRenderer();
 
-        r.addTemplate('layout', new JsonTemplate('<doctype html>{view}'));
-
-        var v = new View('base');
+        r.addView('layout', new JsonTemplate('<doctype html>{content}'));
 
         try {
-            r.render(v);
+            r.render('base');
         }
         catch (err) {
-            test.equal(err.message, 'no template for view "base"');
+            test.equal(err.message, 'view "base" not found');
             test.done();
         }
     }

@@ -30,7 +30,7 @@ var testbench = require(__dirname + '/../../TestBench');
 var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
-var JsonTemplate = capsela.templates.JsonTemplate;
+var JsonTemplate = capsela.views.JsonTemplate;
 var mp = require('capsela-util').MonkeyPatcher;
 
 var jsontemplate = require('../../../deps/json-template');

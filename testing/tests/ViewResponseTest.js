@@ -43,20 +43,39 @@ module.exports["basics"] = testCase({
         cb();
     },
 
-    "test init/sendBody": function(test) {
-        
-        var view = new View('xyz');
-        var response = new ViewResponse(view, 701);
-        var pipe = new Pipe();
+    "test init w/name": function(test) {
 
-        test.equal(response.view, view);
-        test.equal(response.getContentType(), 'text/html; charset=utf-8');
+        var response = new ViewResponse('my-view', {}, 701);
+
+        test.equal(response.view, 'my-view');
         test.equal(response.statusCode, 701);
+        test.equal(response.getContentType(), 'text/html; charset=utf-8');
+
+        test.done();
+    },
+
+    "test init w/view": function(test) {
+
+        var mockView = {};
+        var response = new ViewResponse(mockView, {}, 401);
+
+        test.equal(response.view, mockView);
+        test.equal(response.statusCode, 401);
+        test.equal(response.getContentType(), 'text/html; charset=utf-8');
+        test.done();
+    },
+
+    "test setRenderer/sendBody": function(test) {
+
+        var vm = {};
+        var response = new ViewResponse('my-view', vm, 701);
+        var pipe = new Pipe();
 
         // test fluent interface
         test.equal(response.setRenderer({
-            render: function(v) {
-                test.equal(v, view);
+            render: function(view, model) {
+                test.equal(view, 'my-view');
+                test.equal(model, vm);
                 return 'result';
             }
         }), response);
