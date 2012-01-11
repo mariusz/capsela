@@ -41,6 +41,14 @@ var ViewResponse = capsela.ViewResponse;
 var JsonTemplate = capsela.views.JsonTemplate;
 var Q = require('qq');
 
+var TestView = capsela.View.extend({
+},
+{
+    render: function() {
+        return 'hi there!';
+    }
+});
+
 module.exports["basics"] = testCase({
 
     "test init/isReady": function(test) {
@@ -52,25 +60,6 @@ module.exports["basics"] = testCase({
                 test.done();
             }
         );
-    },
-
-    "test setResolverPool": function(test) {
-
-        test.expect(2);
-        
-        var r = new ViewRenderer();
-
-        var resolver = {};
-        r.vr = {
-            setResolver: function(rx) {
-                test.equal(rx, resolver);
-            }
-        }
-        r.setResolverPool(resolver);
-
-        test.equal(r.resolverPool, resolver);
-        
-        test.done();
     },
 
     "test passthrough": function(test) {
@@ -114,7 +103,7 @@ module.exports["basics"] = testCase({
         var request = new Request();
         var r = new ViewRenderer();
         
-        var view = new View('my-view');
+        var view = new TestView('my-view');
 
         r.setNext(new Stage(
             function() {
@@ -160,59 +149,34 @@ module.exports["rendering"] = testCase({
 
         var r = new ViewRenderer()
         var params = {val: 'ref:req_info:client_ip'};
-        
-        r.addView('myview', new JsonTemplate('Client IP = {val}'));
-        r.addView('layout', new JsonTemplate('<doctype html>{content}'));
 
-        r.setResolverPool({
-            resolve: function(type, ref) {
-                test.equal(type, 'req_info');
-                test.equal(ref, 'client_ip');
-                return '0.0.0.1';
+        var view = new JsonTemplate('Client IP = {val}');
+        
+        r.addView('myview', view);
+        view.setParent(new JsonTemplate('<doctype html>{content}'));
+
+        r.setResolver({
+            resolveReferences: function(str) {
+                test.equal(str, '<doctype html>Client IP = ref:req_info:client_ip');
+                return 'all resolved';
             }
         })
 
-        test.equal(r.render('myview', params), '<doctype html>Client IP = 0.0.0.1');
+        test.equal(r.render('myview', params), 'all resolved');
         test.done();
     },
-
-//    "test render nested views with layout": function(test) {
-//
-//        var r = new Renderer();
-//
-//        r.vr.addViews({
-//            base: new JsonTemplate('{y} {q}'),
-//            sub1: new JsonTemplate('{z} {b}'),
-//            sub2: new JsonTemplate('{a}'),
-//            sub3: new JsonTemplate('{r}'),
-//            layout: new JsonTemplate('<doctype html>{content}')
-//        });
-//
-//        var v = new View('base', {
-//            x: 42,
-//            y: new View('sub1', {
-//                z: new View('sub2', {
-//                    a: 34
-//                }),
-//                b: 'hi'
-//            }),
-//            q: new View('sub3', {
-//                r: 'there'
-//            })
-//        });
-//
-//        test.equal(r.render(v), '<doctype html>34 hi there');
-//        test.done();
-//    },
 
     "test render missing view falls back to error": function(test) {
 
         var r = new ViewRenderer();
 
-        r.addView('error', new JsonTemplate('ERROR {error.code}: {error.message}'));
-        r.addView('layout', new JsonTemplate('<doctype html>{content}'));
+        var view = new JsonTemplate('ERROR {error.code}: {error.message}');
+        
+        view.setParent(new JsonTemplate('<doctype html>{content}'));
 
-        test.equal(r.render('base'), '<doctype html>ERROR 500: view "base" not found');
+        r.addView('error', view);
+
+        test.equal(r.render('base'), '<doctype html>ERROR 500: error rendering view: view "base" not found');
         test.done();
     },
 

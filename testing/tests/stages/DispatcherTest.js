@@ -157,7 +157,7 @@ module.exports["resolving"] = testCase({
             }
         };
 
-        d.setResolverPool(mock);
+        d.setResolver(mock);
         
         test.done();
     },

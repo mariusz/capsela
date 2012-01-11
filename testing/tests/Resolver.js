@@ -35,7 +35,7 @@ module.exports["basics"] = testCase({
 
     "test register/resolve": function(test) {
 
-        var reg = new capsela.ResolverRegistry();
+        var reg = new capsela.Resolver();
 
         test.equal(reg.resolve('base_url'), undefined);
 
@@ -61,7 +61,7 @@ module.exports["basics"] = testCase({
     
     "test register bare function": function(test) {
 
-        var reg = new capsela.ResolverRegistry();
+        var reg = new capsela.Resolver();
 
         test.equal(reg.resolve('base_url'), undefined);
 
@@ -83,3 +83,34 @@ module.exports["basics"] = testCase({
         test.done();
     }
 });
+
+module.exports["resolving"] = {
+
+    "test resolve": function(test) {
+
+        var r = new capsela.Resolver();
+
+        r.register('cap', {
+            resolve: function(nid, nss) {
+                return 'hello, ' + nss;
+            }
+        });
+
+        test.equal(r.resolveReferences(""), "");
+        test.equal(r.resolveReferences("<span>ref:cap:27</span>"), "<span>hello, 27</span>");
+        test.equal(r.resolveReferences("<span>ref:cap:27&ref:cap:52\\</span>"),
+            "<span>hello, 27&hello, 52\\</span>");
+        test.equal(r.resolveReferences("<span>ref:cap:model/28\"xref:cap:29\\</span>"),
+            "<span>hello, model/28\"xhello, 29\\</span>");
+        test.equal(r.resolveReferences("<span>ref:cap:href:47<ref:cap:29></span>"),
+            "<span>hello, href:47<hello, 29></span>");
+        test.equal(r.resolveReferences("<span>ref:cap:href:47[ref:cap:29]<ref:cap:29></span>"),
+            "<span>hello, href:47[hello, 29]<hello, 29></span>");
+        test.equal(r.resolveReferences("<span>ref:cap:href:47.ref:cap:29^</span>"),
+            "<span>hello, href:47.ref:cap:29^</span>");
+        test.equal(r.resolveReferences("<span>ref:cap:href:47`ref:cap:29~</span>"),
+            "<span>hello, href:47`hello, 29~</span>");
+
+        test.done();
+    }
+};

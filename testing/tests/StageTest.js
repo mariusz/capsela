@@ -88,7 +88,7 @@ module.exports["parsing"] = testCase({
                 return mockResponse;
             });
 
-        subStage.setResolverPool = function() {
+        subStage.setResolver = function() {
             test.ok(true);
         };
 
@@ -155,10 +155,10 @@ module.exports["parsing"] = testCase({
 
         var mock = {};
 
-        stage1.setResolverPool(mock);
+        stage1.setResolver(mock);
         stage1.setNext(stage2);
 
-        test.equal(stage2.resolverPool, mock);
+        test.equal(stage2.resolver, mock);
 
         test.done();
     },
@@ -178,7 +178,7 @@ module.exports["parsing"] = testCase({
             }
         }
 
-        stage1.setResolverPool(pool);
+        stage1.setResolver(pool);
         stage1.setNext(stage2);
 
         // add resolver to stage2...
