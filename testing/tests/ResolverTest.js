@@ -40,7 +40,8 @@ module.exports["basics"] = testCase({
         test.equal(reg.resolve('base_url'), undefined);
 
         reg.register('action_link', {
-            resolve: function(nid, nss) {
+            resolve: function(nid, nss, r) {
+                test.equal(r, reg);
                 return '/aloha';
             }
         });
