@@ -40,6 +40,11 @@ var TestView = capsela.View.extend({
 
 module.exports["basics"] = {
 
+    "test isComplete": function(test) {
+        test.ok(new TestView().isComplete());
+        test.done();
+    },
+
     "test set/get parent": function(test) {
 
         var view = new TestView();
