@@ -37,6 +37,30 @@ var Q = require('qq');
 
 module.exports["basics"] = testCase({
 
+    "test setResolver": function(test) {
+
+        test.e
+
+        var stage = new PreferredHost('www.example.com');
+        var resolver = new capsela.Resolver();
+
+        resolver.register('snookums', function() {
+            return '/hello!';
+        });
+
+        stage.setResolver(resolver);
+        
+        test.equal(stage.resolver, resolver);
+
+        // this should now work
+        test.equal(resolver.resolve('absolute_url', '/hithere'), 'http://www.example.com/hithere');
+
+        // should sub-resolve
+        test.equal(resolver.resolve('absolute_url', 'ref:snookums:nothing'), 'http://www.example.com/hello!');
+
+        test.done();
+    },
+
     "test passthrough": function(test) {
 
         var stage = new PreferredHost('www.example.com');
