@@ -61,6 +61,7 @@ var UnitBrowser = Browser.extend({
     init: function(stage) {
         this.top = new capsela.stages.ViewRenderer({}, baseTemplate);
         this.top.setNext(stage);
+        this.echo(this.top);
         this._super();
     },
 
@@ -85,9 +86,7 @@ var UnitBrowser = Browser.extend({
         }
 
         // pass log messages up
-        request.on('log', function(p, m) {
-            self.log(p, m);
-        });
+        this.echo(request);
         
         return Q.ref().then(
             function() {
