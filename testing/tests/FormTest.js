@@ -160,6 +160,61 @@ module.exports["basics"] = testCase({
         test.done();
     },
 
+    "test create request urlEncoded": function(test) {
+
+        test.expect(3);
+        
+        var form = new Form({
+            name: 'Trillian',
+            ship: 'Heart of Gold'
+        });
+
+        var req = form.createRequest();
+
+        test.equal(req.method, 'post');
+
+        form.serialize = function(stream, boundary) {
+            test.equal(stream, req.getBodyStream());
+            test.equal(boundary, null);
+        };
+
+//        req.getBodyStream().getData('utf8').then(
+//            function(data) {
+//                test.done();
+//            }
+//        );
+
+        req.sendBody();
+        test.done();
+    },
+
+    "test create request multipart": function(test) {
+
+        test.expect(3);
+
+        var form = new Form({
+            name: 'Trillian',
+            ship: 'Heart of Gold'
+        });
+
+        var req = form.createRequest(null, null, null, null, true);
+
+        test.equal(req.method, 'post');
+
+        form.serialize = function(stream, boundary) {
+            test.equal(stream, req.getBodyStream());
+            test.equal(boundary, 'dream-of-fair-to-middling-women');
+        };
+
+        req.getBodyStream().getData('utf8').then(
+            function(data) {
+                test.done();
+            }
+        ).end();
+
+        req.sendBody();
+    },
+
     "test encode simple": function(test) {
         // todo
         test.done();
