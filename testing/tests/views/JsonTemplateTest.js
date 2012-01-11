@@ -54,6 +54,26 @@ module.exports["basics"] = testCase({
         test.deepEqual(t.template, 'xyz');
         test.done();
     },
+
+    "test isComplete": function(test) {
+
+        var t = new JsonTemplate('xyz');
+        test.equal(t.isComplete(), false);
+
+        var t = new JsonTemplate('hithere! <!DOCTYPE html>');
+        test.equal(t.isComplete(), false);
+
+        var t = new JsonTemplate('hithere! <!doctype html>');
+        test.equal(t.isComplete(), false);
+
+        t = new JsonTemplate('<html></html>');
+        test.equal(t.isComplete(), true);
+        
+        t = new JsonTemplate('<!DOCTYPE html>');
+        test.equal(t.isComplete(), true);
+
+        test.done();
+    },
     
     "test set/get parent": function(test) {
 
