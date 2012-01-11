@@ -54,6 +54,17 @@ module.exports["basics"] = testCase({
         test.deepEqual(t.template, 'xyz');
         test.done();
     },
+    
+    "test set/get parent": function(test) {
+
+        var view = new JsonTemplate(template);
+
+        test.equal(view.getParent(), undefined);
+        test.equal(view.setParent('sal'), view); // test fluency
+        test.equal(view.getParent(), 'sal');
+
+        test.done();
+    },
 
     "test init w/o env": function(test) {
 

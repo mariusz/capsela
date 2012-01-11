@@ -53,6 +53,17 @@ module.exports["basics"] = testCase({
         test.done();
     },
 
+    "test set/get parent": function(test) {
+
+        var view = new JsonML();
+
+        test.equal(view.getParent(), undefined);
+        test.equal(view.setParent('sal'), view); // test fluency
+        test.equal(view.getParent(), 'sal');
+
+        test.done();
+    },
+
     "test rendering": function(test) {
 
         var obj = 'hi';
