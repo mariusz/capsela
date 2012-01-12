@@ -42,6 +42,10 @@ var TestView = capsela.View.extend({
 
     render: function() {
         // will be replaced
+    },
+
+    isComplete: function() {
+        return false;
     }
 });
 
@@ -153,7 +157,8 @@ module.exports["rendering"] = {
         r.addView('layout', new TestView(
             function(params) {
                 test.deepEqual(params, {
-                    content: 'howdy'
+                    content: 'howdy',
+                    child: p
                 })
                 return 'layout';
             }
@@ -190,7 +195,8 @@ module.exports["rendering"] = {
         view.setParent(new TestView(
             function(params) {
                 test.deepEqual(params, {
-                    content: 'howdy'
+                    content: 'howdy',
+                    child: p
                 })
                 return 'layout';
             }
@@ -199,6 +205,36 @@ module.exports["rendering"] = {
         r.addView('myview', view);
 
         test.equal(r.render('myview', p), 'layout');
+
+        test.done();
+    },
+
+    "test render w/layout": function(test) {
+
+        test.expect(3);
+
+        var r = new ViewRegistry();
+        var p = {};
+
+        var view = new TestView(
+            function(params) {
+                test.equal(params, p);
+                return 'howdy'
+            });
+
+        r.addView('layout', new TestView(
+            function(params) {
+                test.deepEqual(params, {
+                    content: 'howdy',
+                    child: p
+                })
+                return 'layout';
+            }
+        ));
+
+        r.addView('myview', view);
+
+        test.equal(r.render('myview', p, 'layout'), 'layout');
 
         test.done();
     },
@@ -219,7 +255,8 @@ module.exports["rendering"] = {
         var layout = new TestView(
             function(params) {
                 test.deepEqual(params, {
-                    content: 'howdy'
+                    content: 'howdy',
+                    child: p
                 })
                 return 'layout';
             });
@@ -227,7 +264,11 @@ module.exports["rendering"] = {
         var superLayout = new TestView(
             function(params) {
                 test.deepEqual(params, {
-                    content: 'layout'
+                    content: 'layout',
+                    child: {
+                    content: 'howdy',
+                    child: p
+                }
                 })
                 return 'superLayout!';
             }
