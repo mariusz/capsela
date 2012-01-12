@@ -32,7 +32,6 @@ var os = require('os');
 
 var fifoDir = '/tmp/';
 
-// work around imagick bug
 if (os.type().indexOf('NT') >= 0) {
     fifoDir = '\\\\.\\pipe\\';
 }
@@ -45,8 +44,6 @@ var orig = {
 };
 
 var host;
-
-console.log()
 
 exports.setUp = function(hostname) {
     
