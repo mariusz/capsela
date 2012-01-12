@@ -157,10 +157,17 @@ module.exports["rendering"] = testCase({
 
         r.setResolver({
             resolveReferences: function(str) {
-                test.equal(str, '<doctype html>Client IP = ref:req_info:client_ip');
+                test.equal(str, 'done render');
                 return 'all resolved';
             }
-        })
+        });
+
+        r.vr.render = function(view, model, layout) {
+            test.equal(view, 'myview');
+            test.equal(model, params);
+            test.equal(layout, 'layout');
+            return 'done render';
+        }
 
         test.equal(r.render('myview', params), 'all resolved');
         test.done();
