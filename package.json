@@ -3,7 +3,8 @@
     "description": "A high-level, promises-based web framework built for testability",
     "version": "1.0.0",
     "main": "./index.js",
-
+    "homepage": "http://www.capsela.org",
+    
     "licenses": [
         {
             "type": "MIT",
@@ -46,5 +47,9 @@
     "repository": {
         "type": "git",
         "url": "git://github.com/Sitelier/capsela.git"
+    },
+
+    "bugs": {
+        "url": "https://github.com/Sitelier/capsela/issues"
     }
 }
