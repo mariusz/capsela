@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require('../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 
@@ -40,7 +39,7 @@ var originals = {
     setInterval: setInterval
 };
 
-module.exports = testCase({
+module.exports = {
 
     tearDown: function(cb) {
 
@@ -126,4 +125,4 @@ module.exports = testCase({
                 test.done();
             });
     }
-});
+};

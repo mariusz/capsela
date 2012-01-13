@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var Browser = require('capsela').Browser;
 var Request = require('capsela').Request;
@@ -35,7 +34,7 @@ var Response = require('capsela').Response;
 var HttpClientRig = require('capsela').rigs.HttpClientRig;
 var Stage = require('capsela').Stage;
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     setUp: function(cb) {
         HttpClientRig.setUp();
@@ -66,4 +65,4 @@ module.exports["basics"] = testCase({
 
         request.bodyStream.end();
     }
-});
+};

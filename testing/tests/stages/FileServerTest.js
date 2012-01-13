@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require('../../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var fs = require('fs');
 
@@ -36,7 +35,6 @@ var Response = capsela.Response;
 var Request = capsela.Request;
 var FileServer = capsela.stages.FileServer;
 var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
-var StreamUtil = require('capsela-util').StreamUtil;
 var Pipe = require('capsela-util').Pipe;
 
 var fileServer;
@@ -45,7 +43,7 @@ var now = new Date(1980, 1, 22).getTime();
 var Q = require('qq');
 var mp = new MonkeyPatcher();
 
-module.exports = testCase({
+module.exports = {
 
     setUp: function(cb) {
 
@@ -455,4 +453,4 @@ module.exports = testCase({
                 test.done();
         }).end();
     }
-});
+};

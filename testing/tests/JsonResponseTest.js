@@ -27,13 +27,11 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var JsonResponse = require('capsela').JsonResponse;
 var Pipe = require('capsela-util').Pipe;
-var StreamUtil = require('capsela-util').StreamUtil;
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test init bad entity": function(test) {
 
@@ -108,4 +106,4 @@ module.exports["basics"] = testCase({
 
         r.sendBody(pipe);
     }
-});
+};

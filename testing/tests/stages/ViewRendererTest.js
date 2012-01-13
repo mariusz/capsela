@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require('../../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var fs = require('fs');
 
@@ -49,7 +48,7 @@ var TestView = capsela.View.extend({
     }
 });
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test init/isReady": function(test) {
 
@@ -141,13 +140,13 @@ module.exports["basics"] = testCase({
                 test.done();
             }).end();
     }
-});
+};
 
-module.exports["rendering"] = testCase({
+module.exports["rendering"] = {
     
     "test render and resolve": function(test) {
 
-        var r = new ViewRenderer()
+        var r = new ViewRenderer();
         var params = {val: 'ref:req_info:client_ip'};
 
         var view = new JsonTemplate('Client IP = {val}');
@@ -167,7 +166,7 @@ module.exports["rendering"] = testCase({
             test.equal(model, params);
             test.equal(layout, 'layout');
             return 'done render';
-        }
+        };
 
         test.equal(r.render('myview', params), 'all resolved');
         test.done();
@@ -201,4 +200,4 @@ module.exports["rendering"] = testCase({
             test.done();
         }
     }
-});
+};

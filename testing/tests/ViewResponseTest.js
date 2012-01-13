@@ -27,16 +27,14 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
-var StreamUtil = require('capsela-util').StreamUtil;
 var Pipe = require('capsela-util').Pipe;
 var mp = new MonkeyPatcher();
 
 var View = require('capsela').View;
 var ViewResponse = require('capsela').ViewResponse;
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     tearDown: function(cb) {
         mp.tearDown();
@@ -89,4 +87,4 @@ module.exports["basics"] = testCase({
 
         response.sendBody(pipe);
     }
-});
+};

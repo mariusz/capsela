@@ -27,16 +27,14 @@
 "use strict";
 
 var testbench = require('../../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
-var Layer = capsela.Layer;
 var Response = capsela.Response;
 var Request = capsela.Request;
 var Router = capsela.stages.Router;
 var Q = require('qq');
 
-module.exports = testCase({
+module.exports = {
 
     "test match correct route": function(test) {
 
@@ -335,4 +333,4 @@ module.exports = testCase({
             test.done();
         });
     }
-});
+};

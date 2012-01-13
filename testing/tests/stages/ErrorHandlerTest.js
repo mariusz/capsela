@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require('../../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var fs = require('fs');
 
@@ -38,7 +37,7 @@ var Stage = capsela.Stage;
 var ErrorHandler = capsela.stages.ErrorHandler;
 var Q = require('qq');
 
-module.exports = testCase({
+module.exports = {
 
     "test passthrough": function(test) {
 
@@ -114,4 +113,4 @@ module.exports = testCase({
                 test.done();
             }).end();
     }
-});
+};

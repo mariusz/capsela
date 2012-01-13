@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require(__dirname + '/../../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 var PreferredHost = capsela.stages.PreferredHost;
@@ -35,11 +34,9 @@ var View = capsela.View;
 
 var Q = require('qq');
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test setResolver": function(test) {
-
-        test.e
 
         var stage = new PreferredHost('www.example.com');
         var resolver = new capsela.Resolver();
@@ -138,4 +135,4 @@ module.exports["basics"] = testCase({
 
         test.done();
     }
-});
+};

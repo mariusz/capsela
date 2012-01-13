@@ -27,11 +27,10 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test register/resolve": function(test) {
 
@@ -83,7 +82,7 @@ module.exports["basics"] = testCase({
 
         test.done();
     }
-});
+};
 
 module.exports["resolving"] = {
 

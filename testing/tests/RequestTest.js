@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require('../TestBench');
-var testCase = require('nodeunit').testCase;
 var querystring = require('querystring');
 var Pipe = require('capsela-util').Pipe;
 var fs = require('fs');
@@ -42,7 +41,7 @@ var mp = new MonkeyPatcher();
 
 var now = new Date(1980, 1, 22).getTime();
 
-module.exports["methods"] = testCase({
+module.exports["methods"] = {
 
     "test get": function(test) {
         
@@ -81,9 +80,9 @@ module.exports["methods"] = testCase({
         test.ok(request.isHead());
         test.done();
     }
-});
+};
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     setUp: function(cb) {
         mp.patch(Date, 'now', function() {
@@ -319,4 +318,4 @@ module.exports["basics"] = testCase({
         // stream the request body
         request.getBodyStream().end('yo, what gives?', 'utf8');
     }
-});
+};

@@ -9,7 +9,6 @@
 "use strict";
 
 var testbench = require(__dirname + '/../../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 var Dispatcher = capsela.stages.Dispatcher;
@@ -17,7 +16,7 @@ var View = capsela.View;
 
 var Q = require('qq');
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test hyphenize": function(test) {
 
@@ -140,9 +139,9 @@ module.exports["basics"] = testCase({
                 test.done();
             });
     }
-});
+};
 
-module.exports["resolving"] = testCase({
+module.exports["resolving"] = {
 
     "test setResolverPool registers resolver": function(test) {
 
@@ -202,9 +201,9 @@ module.exports["resolving"] = testCase({
             }
         ).end();
     }
-});
+};
 
-module.exports["dispatching"] = testCase({
+module.exports["dispatching"] = {
 
     "test no controller match": function(test) {
 
@@ -389,4 +388,4 @@ module.exports["dispatching"] = testCase({
             }
         ).end();
     }
-});
+};

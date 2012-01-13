@@ -27,15 +27,13 @@
 "use strict";
 
 var testbench = require('../TestBench');
-var testCase = require('nodeunit').testCase;
-var StreamUtil = require('capsela-util').StreamUtil;
 
 var fs = require('fs');
 
 var Response = require('capsela').Response;
 var Pipe = require('capsela-util').Pipe;
 
-module.exports["headers"] = testCase({
+module.exports["headers"] = {
 
     "test init with body": function(test) {
 
@@ -223,9 +221,9 @@ module.exports["headers"] = testCase({
 
         test.done();
     }
-});
+};
 
-module.exports["caching"] = testCase({
+module.exports["caching"] = {
 
     "test enableCaching w/o expires": function(test) {
 
@@ -263,4 +261,4 @@ module.exports["caching"] = testCase({
 
         test.done();
     }
-});
+};

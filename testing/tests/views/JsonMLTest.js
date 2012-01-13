@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require(__dirname + '/../../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 var JsonML = capsela.views.JsonML;
@@ -39,7 +38,7 @@ var template =
  -->\n\
 xyz';
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     setUp: mp.setUp,
     tearDown: mp.tearDown,
@@ -95,4 +94,4 @@ module.exports["basics"] = testCase({
 
         test.done();
     }
-});
+};

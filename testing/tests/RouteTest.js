@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require('../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var Route = require('capsela').Route;
 
@@ -42,7 +41,7 @@ var controller = {
     }
 };
 
-module.exports["match"] = testCase({
+module.exports["match"] = {
 
     "test match wildcard": function(test) {
 
@@ -181,10 +180,10 @@ module.exports["match"] = testCase({
 
         test.done();
     }
-});
+};
 
 
-module.exports["handlers"] = testCase({
+module.exports["handlers"] = {
 
     "test get handler no post": function(test) {
 
@@ -235,4 +234,4 @@ module.exports["handlers"] = testCase({
 
         test.done();
     }
-});
+};

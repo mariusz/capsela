@@ -27,11 +27,10 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test init": function(test) {
 
@@ -53,4 +52,4 @@ module.exports["basics"] = testCase({
 
         test.done();
     }
-});
+};

@@ -27,13 +27,12 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 var Stage = capsela.Stage;
 var Q = require('qq');
 
-module.exports["parsing"] = testCase({
+module.exports["parsing"] = {
 
     "test init": function(test) {
 
@@ -176,7 +175,7 @@ module.exports["parsing"] = testCase({
                 test.equal(type, 'base_url');
                 test.equal(resolver, mock);
             }
-        }
+        };
 
         stage1.setResolver(pool);
         stage1.setNext(stage2);
@@ -186,4 +185,4 @@ module.exports["parsing"] = testCase({
 
         test.done();
     }
-});
+};

@@ -27,12 +27,11 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 var Pipe = require('capsela-util').Pipe;
 
 var BlobResponse = require('capsela').BlobResponse;
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test init": function(test) {
 
@@ -56,7 +55,7 @@ module.exports["basics"] = testCase({
             getStream: function() {
                 return source;
             }
-        }
+        };
 
         var response = new BlobResponse(blob);
 
@@ -105,4 +104,4 @@ module.exports["basics"] = testCase({
         test.equal(response.getHeader('last-modified'), new Date(72146).toUTCString());
         test.done();
     }
-});
+};

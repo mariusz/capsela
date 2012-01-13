@@ -27,11 +27,10 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var Cookie = require('capsela').Cookie;
 
-module.exports["parsing"] = testCase({
+module.exports["parsing"] = {
 
     "test parse no header": function(test) {
 
@@ -42,7 +41,7 @@ module.exports["parsing"] = testCase({
                 test.equal(name.toLowerCase(), 'cookie');
                 return null;
             }
-        }
+        };
 
         test.deepEqual(Cookie.getCookies(mockReq), {});
         test.done();
@@ -54,7 +53,7 @@ module.exports["parsing"] = testCase({
             getHeader: function(name) {
                 return 'name=value';
             }
-        }
+        };
 
         test.deepEqual(Cookie.getCookies(mockReq), {name: 'value'});
         test.done();
@@ -66,7 +65,7 @@ module.exports["parsing"] = testCase({
             getHeader: function(name) {
                 return 'chrome=good; firefox=good;ie=blows';
             }
-        }
+        };
 
         test.deepEqual(Cookie.getCookies(mockReq), {
             firefox: 'good',
@@ -82,7 +81,7 @@ module.exports["parsing"] = testCase({
             getHeader: function(name) {
                 return 'chrome=good; firefox=good;ie=blows;';
             }
-        }
+        };
 
         test.deepEqual(Cookie.getCookies(mockReq), {
             firefox: 'good',
@@ -104,7 +103,7 @@ module.exports["parsing"] = testCase({
             getHeader: function(name) {
                 return header;
             }
-        }
+        };
 
         header = name + "=" + value;
         cookies = Cookie.getCookies(mockRequest);
@@ -124,9 +123,9 @@ module.exports["parsing"] = testCase({
 
         test.done();
     }
-});
+};
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test minimal": function(test) {
 
@@ -294,4 +293,4 @@ module.exports["basics"] = testCase({
 
         test.done();
     }
-});
+};

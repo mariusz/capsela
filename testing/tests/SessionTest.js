@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require('../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 var Session = capsela.Session;
@@ -38,7 +37,7 @@ var mp = require('capsela-util').MonkeyPatcher;
 
 var SessionStore = capsela.SessionStore;
 
-module.exports = testCase({
+module.exports = {
 
     setUp: mp.setUp,
     tearDown: mp.tearDown,
@@ -166,4 +165,4 @@ module.exports = testCase({
         test.done();
     }
 
-});
+};

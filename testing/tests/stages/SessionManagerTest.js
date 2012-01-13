@@ -28,7 +28,6 @@
 /*global require: false, __dirname: false, global: false, process: false, exports: true, Buffer: false, module: false, setInterval: true */
 
 var testbench = require('../../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 var SessionManager = capsela.stages.SessionManager;
@@ -37,16 +36,10 @@ var Session = capsela.Session;
 var Request = capsela.Request;
 var Response = capsela.Response;
 var Cookie = capsela.Cookie;
-var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
-
-var mp = new MonkeyPatcher();
 
 var Q = require('qq');
 
-var ss = new SessionStore();
-var sm = new SessionManager(ss);
-
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test init without store": function(test) {
 
@@ -86,9 +79,9 @@ module.exports["basics"] = testCase({
                 test.done();
             });
     }
-});
+};
 
-module.exports["establishing"] = testCase({
+module.exports["establishing"] = {
     
     "test establish with no id": function(test) {
 
@@ -163,9 +156,9 @@ module.exports["establishing"] = testCase({
                 test.done();
             });
     }
-});
+};
 
-module.exports["servicing"] = testCase({
+module.exports["servicing"] = {
 
     "test save non-ended session": function(test) {
 
@@ -333,4 +326,4 @@ module.exports["servicing"] = testCase({
             test.done();
         });
     }
-});
+};

@@ -27,11 +27,10 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var Redirect = require('capsela').Redirect;
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test init 301": function(test) {
 
@@ -68,4 +67,4 @@ module.exports["basics"] = testCase({
 
         test.done();
     }
-});
+};

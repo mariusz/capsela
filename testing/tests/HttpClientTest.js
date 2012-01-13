@@ -27,7 +27,6 @@
 "use strict";
 
 var TestBench = require('../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var Request = require('capsela').Request;
 
@@ -47,7 +46,7 @@ var orig = {
     get: HttpClient.get
 };
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     tearDown: function(cb) {
         http.request = orig.httpRequest;
@@ -202,7 +201,7 @@ module.exports["basics"] = testCase({
         https.request = function(options, cb) {
             test.ok(false);
             cb();
-        }
+        };
 
         c.dispatch(request).then(
             function(response) {
@@ -365,4 +364,4 @@ module.exports["basics"] = testCase({
                 test.done();
             });
     }
-});
+};

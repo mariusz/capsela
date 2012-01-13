@@ -27,7 +27,6 @@
 "use strict";
 
 var testbench = require('../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var http = require('http');
 var https = require('https');
@@ -50,7 +49,7 @@ var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
 var mp = new MonkeyPatcher();
 var log;
 
-module.exports["conditional get"] = testCase({
+module.exports["conditional get"] = {
 
     "test validate mtime 304": function(test) {
 
@@ -105,9 +104,9 @@ module.exports["conditional get"] = testCase({
             test.done();
         });
     }
-});
+};
 
-module.exports["construct/start"] = testCase({
+module.exports["construct/start"] = {
 
     setUp: function(cb) {
         log = new Log();
@@ -449,10 +448,10 @@ module.exports["construct/start"] = testCase({
                 test.done();
             }).end();
     }
-});
+};
 
 // todo move these somewhere else?
-module.exports["form processing"] = testCase({
+module.exports["form processing"] = {
 
     "test submit multipart form": function(test) {
 
@@ -573,9 +572,9 @@ module.exports["form processing"] = testCase({
         req.write(fs.readFileSync(testbench.fixturesDir + '/form-data/jpeg_upload.bin'));
         req.end();
     }
-});
+};
 
-module.exports["request processing"] = testCase({
+module.exports["request processing"] = {
 
     tearDown: function(cb) {
         mp.tearDown();
@@ -721,5 +720,5 @@ module.exports["request processing"] = testCase({
 
         server.handleRequest(req, res);
     }
-});
+};
 

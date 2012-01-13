@@ -27,17 +27,15 @@
 "use strict";
 
 var testbench = require(__dirname + '/../TestBench');
-var testCase = require('nodeunit').testCase;
 
 var capsela = require('capsela');
 var Form = capsela.Form;
 var Pipe = require('capsela-util').Pipe;
-var StreamUtil = require('capsela-util').StreamUtil;
 var Request = capsela.Request;
 var querystring = require('querystring');
 var fs = require('fs');
 
-module.exports["parsing"] = testCase({
+module.exports["parsing"] = {
 
     "test get form urlencoded body": function(test) {
 
@@ -99,9 +97,9 @@ module.exports["parsing"] = testCase({
             test.done();
         });
     }
-});
+};
 
-module.exports["basics"] = testCase({
+module.exports["basics"] = {
 
     "test init": function(test) {
 
@@ -254,4 +252,4 @@ bully!' + newline + '\
         form.serialize(pipe, 'this is a boundary');
         pipe.end();
     }
-});
+};
