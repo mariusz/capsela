@@ -1,4 +1,4 @@
-/**
+/*!
  * Copyright (c) 2011 Sitelier Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining

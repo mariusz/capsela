@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2011 Sitelier Inc.
+/*!
+ * Copyright (c) 2011 Sitelier Inc.
  * All rights reserved.
  *
  * Author: Seth Purcell

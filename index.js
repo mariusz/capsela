@@ -1,4 +1,4 @@
-/**
+/*!
  * Copyright (c) 2011 Sitelier Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -28,7 +28,7 @@
 /*global require: false, __dirname: false, global: false, process: false, exports: true, Buffer: false, module: false, setInterval: true */
 
 var modules = ['Server', 'Stage', 'Request', 'Response',
-    'Redirect', 'FileResponse',
+    'Redirect', 'FileResponse', 'Service', 'App',
     'JsonResponse', 'BlobResponse', 'ViewResponse',
     'ClientResponse', 'Resolver',
      'Route', 'HttpClient', 'Browser', 'Cookie', 'Form',
