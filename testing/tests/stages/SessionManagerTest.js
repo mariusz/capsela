@@ -37,7 +37,7 @@ var Request = capsela.Request;
 var Response = capsela.Response;
 var Cookie = capsela.Cookie;
 
-var Q = require('qq');
+var Q = require('q');
 
 module.exports["basics"] = {
 

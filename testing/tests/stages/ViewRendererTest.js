@@ -38,7 +38,7 @@ var ViewRenderer = capsela.stages.ViewRenderer;
 var View = capsela.View;
 var ViewResponse = capsela.ViewResponse;
 var JsonTemplate = capsela.views.JsonTemplate;
-var Q = require('qq');
+var Q = require('q');
 
 var TestView = capsela.View.extend({
 },

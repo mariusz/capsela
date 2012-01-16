@@ -32,7 +32,7 @@ var capsela = require('capsela');
 var PreferredHost = capsela.stages.PreferredHost;
 var View = capsela.View;
 
-var Q = require('qq');
+var Q = require('q');
 
 module.exports["basics"] = {
 

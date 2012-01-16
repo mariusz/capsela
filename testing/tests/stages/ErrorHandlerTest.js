@@ -35,7 +35,7 @@ var Response = capsela.Response;
 var Request = capsela.Request;
 var Stage = capsela.Stage;
 var ErrorHandler = capsela.stages.ErrorHandler;
-var Q = require('qq');
+var Q = require('q');
 
 module.exports = {
 

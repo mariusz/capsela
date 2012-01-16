@@ -37,7 +37,7 @@ var http = require('http');
 var https = require('https');
 
 var Pipe = require('capsela-util').Pipe;
-var Q = require('qq');
+var Q = require('q');
 
 var orig = {
     httpRequest: http.request,
