@@ -30,7 +30,7 @@ var testbench = require(__dirname + '/../TestBench');
 
 var capsela = require('capsela');
 var Stage = capsela.Stage;
-var Q = require('qq');
+var Q = require('q');
 
 module.exports["parsing"] = {
 

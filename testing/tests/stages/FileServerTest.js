@@ -40,7 +40,7 @@ var Pipe = require('capsela-util').Pipe;
 var fileServer;
 var origDateNow = Date.now;
 var now = new Date(1980, 1, 22).getTime();
-var Q = require('qq');
+var Q = require('q');
 var mp = new MonkeyPatcher();
 
 exports["basics"] = {

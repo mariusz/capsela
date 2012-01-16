@@ -32,7 +32,7 @@ var Pipe = require('capsela-util').Pipe;
 var fs = require('fs');
 var qfs = require('q-fs');
 var mp = new MonkeyPatcher();
-var Q = require('qq');
+var Q = require('q');
 
 var FileResponse = require('capsela').FileResponse;
 

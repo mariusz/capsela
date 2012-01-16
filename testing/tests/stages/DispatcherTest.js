@@ -14,7 +14,7 @@ var capsela = require('capsela');
 var Dispatcher = capsela.stages.Dispatcher;
 var View = capsela.View;
 
-var Q = require('qq');
+var Q = require('q');
 
 module.exports["basics"] = {
 

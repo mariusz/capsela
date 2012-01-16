@@ -32,7 +32,7 @@ var capsela = require('capsela');
 var Response = capsela.Response;
 var Request = capsela.Request;
 var Router = capsela.stages.Router;
-var Q = require('qq');
+var Q = require('q');
 
 module.exports = {
 

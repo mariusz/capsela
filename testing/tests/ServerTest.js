@@ -40,7 +40,7 @@ var Response = capsela.Response;
 var Form = capsela.Form;
 var Request = capsela.Request;
 var Log = require('capsela-util').Log;
-var Q = require('qq');
+var Q = require('q');
 
 var mocks = require('capsela').mocks;
 
