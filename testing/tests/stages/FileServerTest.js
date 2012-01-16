@@ -43,7 +43,7 @@ var now = new Date(1980, 1, 22).getTime();
 var Q = require('qq');
 var mp = new MonkeyPatcher();
 
-module.exports = {
+exports["basics"] = {
 
     setUp: function(cb) {
 
@@ -61,18 +61,23 @@ module.exports = {
         cb();
     },
 
-    "test non-matching request": function(test) {
+    "test non-matching request falls through": function(test) {
 
         var request = new Request('GET', '/yomama');
 
+        fileServer.pass = function(req) {
+            test.equal(req, request);
+            return 'ok';
+        }
+
         Q.when(fileServer.service(request),
             function(response) {
-                test.equal(response, undefined);
+                test.equal(response, 'ok');
                 test.done();
             });
     },
 
-    "test malicious request": function(test) {
+    "test malicious request throws 403": function(test) {
 
         var request = new Request('GET', '/resources/../../etc/passwd');
 
@@ -85,23 +90,33 @@ module.exports = {
         }
     },
 
-    "test url containing baseUrl passes through": function(test) {
+    "test url containing baseUrl falls through": function(test) {
 
         var request = new Request('GET', '/other/resources/blah.jpg');
 
+        fileServer.pass = function(req) {
+            test.equal(req, request);
+            return 'ok';
+        }
+
         Q.when(fileServer.service(request),
             function(response) {
-                test.equal(response, undefined);
+                test.equal(response, 'ok');
                 test.done();
             });
     },
 
-    "test url starting with baseUrl passes through": function(test) {
+    "test url starting with baseUrl falls through": function(test) {
         var request = new Request('GET', '/resources_of_joy/blah.jpg');
+
+        fileServer.pass = function(req) {
+            test.equal(req, request);
+            return 'ok';
+        }
 
         Q.when(fileServer.service(request),
             function(response) {
-                test.equal(response, undefined);
+                test.equal(response, 'ok');
                 test.done();
             });
     },
@@ -131,40 +146,63 @@ module.exports = {
         ).end();
     },
 
-    "test missing file": function(test) {
+    "test missing file falls through": function(test) {
 
+        var fileServer = new FileServer("/", testbench.fixturesDir + '/fileserver');
         var request = new Request('GET', '/resources/chickens.jpg');
 
-        Q.when(fileServer.service(request), null,
-            function(err) {
-                test.equal(err.code, 404);
-                test.equal(err.message, 'file not found');
-                test.done();
-            });
-    },
+        fileServer.pass = function(req) {
+            test.equal(req, request);
+            return 'ok';
+        }
 
-    "test fall through option": function(test) {
-
-        var fileServer = new FileServer("/", testbench.fixturesDir + '/fileserver', true);
-        var request = new Request('GET', '/resources/chickens.jpg');
-        var bodyBuffer = new Pipe(true);
-
-        test.expect(2);
-
-        fileServer.pass = function() {
-            test.ok(true);
-        };
-        
         Q.when(fileServer.service(request),
             function(response) {
-                test.equal(response, undefined);
+                test.equal(response, 'ok');
                 test.done();
             });
+    }
+}
+
+exports["default file"] = {
+
+    setUp: function(cb) {
+
+        mp.patch(Date, 'now', function() {
+            return now;
+        });
+
+        fileServer = new FileServer("/resources", testbench.fixturesDir + '/fileserver');
+
+        cb();
+    },
+
+    tearDown: function(cb) {
+        Date.now = origDateNow;
+        cb();
+    },
+
+    "test dir with missing default file falls through": function(test) {
+
+        var fileServer = new FileServer("/resources", testbench.fixturesDir + '/fileserver', 'index.html');
+        var request = new Request('GET', '/resources');
+
+        fileServer.pass = function(req) {
+            test.equal(req, request);
+            return 'ok';
+        }
+
+        Q.when(fileServer.service(request),
+            function(response) {
+                test.equal(response, 'ok');
+                test.done();
+            }
+        ).end();
     },
 
     "test default file option without trailing slash": function(test) {
 
-        var fileServer = new FileServer("/resources", testbench.fixturesDir + '/fileserver', true, 'chickens.html');
+        var fileServer = new FileServer("/resources", testbench.fixturesDir + '/fileserver', 'chickens.html');
         var request = new Request('GET', '/resources');
         var bodyBuffer = new Pipe(true);
         var contentLength;
@@ -189,7 +227,7 @@ module.exports = {
 
     "test default file option with trailing slash": function(test) {
 
-        var fileServer = new FileServer("/resources", testbench.fixturesDir + '/fileserver', true, 'chickens.html');
+        var fileServer = new FileServer("/resources", testbench.fixturesDir + '/fileserver', 'chickens.html');
         var request = new Request('GET', '/resources/');
         var bodyBuffer = new Pipe(true);
         var contentLength;
@@ -212,16 +250,48 @@ module.exports = {
         ).end();
     },
 
-    "test match directory with no default gives 404": function(test) {
+    "test default file in subdirectory": function(test) {
 
-        var request = new Request('GET', '/resources');
+        var fileServer = new FileServer("/", testbench.fixturesDir + '/fileserver', 'main.css');
+        var request = new Request('GET', '/styles');
+        var bodyBuffer = new Pipe(true);
+        var contentLength;
 
-        Q.when(fileServer.service(request), null,
-            function(err) {
-                test.equal(err.code, 404);
-                test.equal(err.message, 'file not found');
+        Q.when(fileServer.service(request),
+            function(response) {
+                test.equal(response.statusCode, 200);
+                contentLength = response.getHeader('content-length');
+                test.equal(response.getHeader("Content-Type"), "text/css");
+                test.equal(response.getHeader('Expires'), new Date(now + 365 * 86400 * 1000).toUTCString());
+                response.sendBody(bodyBuffer);
+                return bodyBuffer.getData();
+            }
+        ).then(
+            function(data) {
+                test.equal(data.length, contentLength);
+                test.ok(data.toString().indexOf('font-family:') > 0);
                 test.done();
-            });
+            }
+        ).end();
+    }
+}
+
+exports["file types"] = {
+
+    setUp: function(cb) {
+
+        mp.patch(Date, 'now', function() {
+            return now;
+        });
+
+        fileServer = new FileServer("/resources", testbench.fixturesDir + '/fileserver');
+
+        cb();
+    },
+
+    tearDown: function(cb) {
+        Date.now = origDateNow;
+        cb();
     },
 
     "test serve txt": function(test) {
@@ -230,7 +300,7 @@ module.exports = {
         var bodyBuffer = new Pipe(true);
 
         fs.stat(testbench.fixturesDir + '/fileserver/monkeys.txt', function(err, stat) {
-            
+
             Q.when(fileServer.service(request),
                 function(response) {
                     test.equal(response.statusCode, 200);
@@ -413,12 +483,12 @@ module.exports = {
 
         var request = new Request('GET', '/resources/more/scripts/hi.js');
 
-        Q.when(fileServer.service(request), null,
-            function(err) {
-                test.equal(err.code, 404);
+        Q.when(fileServer.service(request),
+            function(response) {
+                test.equal(response, undefined);
 
                 request = new Request('GET', '/resources/more/scripts/hi.js');
-                fileServer.addPath("/resources/more", testbench.fixturesDir + '/fileserver2');
+                fileServer.mount(testbench.fixturesDir + '/fileserver2', "/resources/more");
 
                 return fileServer.service(request);
             }
@@ -430,12 +500,12 @@ module.exports = {
 
                 return fileServer.service(request);
             }
-        ).then(null,
-            function(err) {
-                test.equal(err.code, 404);
+        ).then(
+            function(response) {
+                test.equal(response, undefined);
 
                 request = new Request('GET', '/resources/evenmore/styles/other.css');
-                fileServer.addPath("/resources/evenmore", testbench.fixturesDir + '/fileserver3');
+                fileServer.mount(testbench.fixturesDir + '/fileserver3', "/resources/evenmore");
 
                 return fileServer.service(request);
             }
