@@ -51,6 +51,66 @@ var log;
 
 module.exports["conditional get"] = {
 
+    "test drop entity headers from 304": function(test) {
+
+        var mtime = new Date(72145);
+
+        var req = new mocks.Request('GET', '/something', {
+            'If-Modified-Since': mtime.toUTCString()
+        });
+        
+        var server = new Server();
+
+        server.setNext(
+            function(request) {
+                var r = new Response(200, {
+                    'content-length': 42224,
+                    'content-md5': 'hi there',
+                    'content-norp': 'norp'
+                });
+                r.enableCaching(mtime);
+                return r;
+            });
+        
+        var res = new mocks.Response();
+
+        server.handleRequest(req, res);
+
+        // hitting a null inner stage results in a 404
+        res.on('end', function() {
+            test.equal(304, res.statusCode);
+            test.equal(res.headers['content-length'], undefined);
+            test.done();
+        });
+    },
+
+    "test ignore POST": function(test) {
+
+        var mtime = new Date(72145);
+
+        var req = new mocks.Request('POST', '/something', {
+            'If-Modified-Since': mtime.toUTCString()
+        });
+        var res = new mocks.Response();
+
+        var server = new Server();
+
+        server.setNext(
+            function(request) {
+                var r = new Response();
+                r.enableCaching(mtime);
+                return r;
+            });
+
+        server.handleRequest(req, res);
+
+        // hitting a null inner stage results in a 404
+        res.on('end', function() {
+            test.equal(200, res.statusCode);
+            test.done();
+        });
+    },
+
     "test validate mtime 304": function(test) {
 
         var mtime = new Date(72145);
