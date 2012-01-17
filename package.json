@@ -1,7 +1,7 @@
 {
     "name": "capsela",
     "description": "A high-level, promises-based web framework built for testability",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "main": "./index.js",
     "homepage": "http://www.capsela.org",
     
