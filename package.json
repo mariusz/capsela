@@ -1,7 +1,7 @@
 {
     "name": "capsela",
     "description": "A high-level, promises-based web framework built for testability",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "main": "./index.js",
     "homepage": "http://www.capsela.org",
     
@@ -21,7 +21,7 @@
     },
 
     "devDependencies": {
-        "nodeunit": ">=0.5.1"
+        "testpilot": ">=0.2.2"
     },
 
     "engines": {
@@ -29,7 +29,7 @@
     },
 
     "scripts": {
-        "test": "nodeunit testing/tests/*"
+        "test": "testpilot testing/tests"
     },
 
     "author": {
